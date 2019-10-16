@@ -20,6 +20,8 @@ def clear_screen():
 
 def agent():
     print('You have successfully logged')
+
+# def officer():
     
 
 def login():
@@ -80,9 +82,9 @@ def homescreen():
 def main():
     global connection, c
 
-    database_name = input('Database name: ')
+    #database_name = input('Database name: ')
 
-    connect(database_name) # connect the database
+    connect("mp1.db") # connect the database
     homescreen()
 
 main()
