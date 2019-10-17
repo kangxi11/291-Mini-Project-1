@@ -1,6 +1,7 @@
 import sqlite3
 import time
 import sys
+import getpass
 
 connection = None
 c = None # cursor
@@ -18,8 +19,9 @@ def clear_screen():
     print('----------------------------------------------------------------------------------------------')
     print('\n\n\n\n')
 
-def agent():
+def agent(user):
     print('You have successfully logged')
+    print(user)
 
 # def officer():
     
@@ -38,13 +40,13 @@ def login():
     while True:
         try:
             input_uid = input('UID: ')
-            input_pass = input('PWD: ')
-            c.execute ("SELECT uid, pwd FROM users WHERE uid = :uid;", {"uid":input_uid})
-            users = c.fetchone()
+            input_pass = getpass.getpass('Password: ')
+            c.execute ("SELECT * FROM users WHERE uid = :uid;", {"uid":input_uid})
+            user = c.fetchone()
            
-            if users == None:
+            if user == None:
                 raise AssertionError('\nInvalid UID')
-            elif (input_pass != str(users[1])):
+            elif (input_pass != str(user[1])):
                 raise AssertionError('\nIncorrect Password')
         
         except AssertionError as error:
@@ -52,7 +54,9 @@ def login():
 
         else:
             break
-    agent()
+
+    if str(user[2]) == 'a':
+        agent(user)
         
     
 def homescreen():
