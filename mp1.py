@@ -31,30 +31,24 @@ def login():
 
     print('Please enter your UID and PWD')
 
-    c.execute ("SELECT uid, pwd FROM users;")
-    users = c.fetchall()
-
-    input_uid = input('UID: ')
-    input_pass = input('PWD: ')
 
     uid = None
     password = None
 
     while True:
         try:
-            for t in users:
-                if (str(t[0]) == input_uid):
-                    uid = str(t[0])
-                    password = str(t[1])
-            if uid == None:
+            input_uid = input('UID: ')
+            input_pass = input('PWD: ')
+            c.execute ("SELECT uid, pwd FROM users WHERE uid = :uid;", {"uid":input_uid})
+            users = c.fetchone()
+           
+            if users == None:
                 raise AssertionError('\nInvalid UID')
-            if ( (uid != None) & (input_pass != password) ):
+            elif (input_pass != str(users[1])):
                 raise AssertionError('\nIncorrect Password')
         
         except AssertionError as error:
             print(error)
-            input_uid = input('UID: ')
-            input_pass = input('PWD: ')
 
         else:
             break
