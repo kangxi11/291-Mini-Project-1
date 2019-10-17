@@ -16,7 +16,7 @@ def connect(path):
 
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
-    print('\n\n')
+    print('\n\n\n\n')
 
 def agent():
     print('You have successfully logged')
@@ -43,8 +43,8 @@ def login():
     while True:
         try:
             for t in users:
-                if (t[0] == input_uid):
-                    uid = t[0]
+                if (str(t[0]) == input_uid):
+                    uid = str(t[0])
                     password = str(t[1])
             if uid == None:
                 raise AssertionError('\nInvalid UID')

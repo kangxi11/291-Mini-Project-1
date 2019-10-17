@@ -208,8 +208,8 @@ insert into demeritNotices values ('1964-08-20', 'Walt', 'Disney', 2, 'Speeding'
 insert into payments values (400, '2019-09-21', 5);
 insert into payments values (407, '2019-09-21', 15);
 
-insert into users values (101, '12345', 'a', 'John', 'Truyens', 'Edmonton');
-insert into users values (102, 'password', 'o', 'Horace', 'Combs', 'Edmonton');
+insert into users values ('101', '12345', 'a', 'John', 'Truyens', 'Edmonton');
+insert into users values ('102', 'password', 'o', 'Horace', 'Combs', 'Edmonton');
 
     """)
 
