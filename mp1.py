@@ -41,7 +41,7 @@ def login():
         try:
             input_uid = input('UID: ')
             input_pass = getpass.getpass('Password: ')
-            c.execute ("SELECT * FROM users WHERE uid = :uid;", {"uid":input_uid})
+            c.execute ("SELECT * FROM users WHERE uid = :uid COLLATE NOCASE;", {"uid":input_uid})
             user = c.fetchone()
            
             if user == None:
