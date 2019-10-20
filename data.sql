@@ -90,3 +90,4 @@ insert into payments values (407, '2019-09-21', 15);
 
 insert into users values (101, '12345', 'a', 'John', 'Truyens', 'Edmonton');
 insert into users values (102, 'password', 'o', 'Horace', 'Combs', 'Edmonton');
+insert into users values ('user1', 'abcd', 'a', 'Mia', 'Warner', 'Toronto');
