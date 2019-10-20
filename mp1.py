@@ -3,6 +3,9 @@ import time
 import sys
 import getpass
 
+from agent import *
+from officer import *
+
 connection = None
 c = None # cursor
 
@@ -18,12 +21,6 @@ def connect(path):
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
     print('\n\n\n\n')
-
-def agent(user):
-    print('You have successfully logged')
-    print(user)
-
-# def officer():
     
 
 def login():
