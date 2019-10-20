@@ -1,4 +1,7 @@
 # for all the functionalities of the officer
+def clear_screen():
+    print('----------------------------------------------------------------------------------------------')
+    print('\n\n\n\n')
 
 def officer_menu(user):
     print('Hello Officer', user[4])
@@ -8,4 +11,4 @@ def officer_menu(user):
     print('2. Find a Car Owner')
     choice = input('Choice: ')
 
-def 
+#def o1():

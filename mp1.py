@@ -41,7 +41,7 @@ def login():
             c.execute ("SELECT * FROM users WHERE uid = :uid COLLATE NOCASE and pwd = :pwd;", {"uid":input_uid, "pwd":input_pass})
             user = c.fetchall()
 
-            if user == None:
+            if len(user) == 0:
                 raise AssertionError("*** Invalid Credentials ***")
         
         except AssertionError as error:
