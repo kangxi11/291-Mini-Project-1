@@ -21,6 +21,23 @@ def connect(path):
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
     print('\n\n\n\n')
+
+def officer_menu(user):
+    print('Hello Officer', user[4])
+    print('Please choose a task: ')
+
+    print('1. Issue a Ticket')
+    print('2. Find a Car Owner')
+    choice = input('Choice: ')
+
+    clear_screen()
+
+    if choice == '1':
+        o1(c, connection)
+
+def agent_menu(user):
+    print('You have successfully logged')
+    print(user)
     
 
 def login():
@@ -48,14 +65,15 @@ def login():
             print(error)
 
         else:
+            user = user[0]
             break
 
     clear_screen()
 
-    if str(user[0][2]) == 'a':
-        agent(user[0])
-    if str(user[0][2]) == 'o':
-        officer_menu(user[0])
+    if str(user[2]) == 'a':
+        agent(user)
+    if str(user[2]) == 'o':
+        officer_menu(user)
         
     
 def homescreen():
