@@ -1,5 +1,11 @@
 # for all the functionalities of the officer
 
-def officer(user):
-    print('You have successfully logged')
-    print(user)
+def officer_menu(user):
+    print('Hello Officer', user[4])
+    print('Please choose a task: ')
+
+    print('1. Issue a Ticket')
+    print('2. Find a Car Owner')
+    choice = input('Choice: ')
+
+def 
