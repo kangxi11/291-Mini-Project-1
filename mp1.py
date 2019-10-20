@@ -41,7 +41,7 @@ def login():
         try:
             input_uid = input('UID: ')
             input_pass = getpass.getpass('Password: ')
-            c.execute ("SELECT * FROM users WHERE uid = :uid and pwd = :pwd;", {"uid":input_uid, "pwd":input_pass})
+            c.execute ("SELECT * FROM users WHERE uid = :uid COLLATE NOCASE and pwd = :pwd COLLATE NOCASE;", {"uid":input_uid, "pwd":input_pass})
             user = c.fetchall()
 
             if user == None:
@@ -53,8 +53,8 @@ def login():
         else:
             break
 
-    if str(user[2]) == 'a':
-        agent(user)
+    if str(user[0][2]) == 'a':
+        agent(user[0])
         
     
 def homescreen():
