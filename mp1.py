@@ -46,6 +46,7 @@ def login():
     clear_screen()
 
     print('Please enter your UID and PWD')
+    print('Enter ''exit'' to exit or ''logout'' to logout at anytime')
 
 
     uid = None
@@ -81,18 +82,16 @@ def homescreen():
     print('Welcome to Service Alberta')
     print('Please select an option by inputting a number:')
     print('1 - Login')
-    print('2 - Logout')
-    print('3 - Exit')
+    print('2 - Exit')
     user_choice = input('Choice: ')
 
     if user_choice == '1':
         login()
-    if user_choice == '3':
+    if user_choice == '2':
         clear_screen()
         print('Service Alberta is now exiting')
         time.sleep(1)
         sys.exit()
-
 
 def main():
     global connection, c
@@ -100,6 +99,10 @@ def main():
     #database_name = input('Database name: ')
 
     connect("mp1.db") # connect the database
-    homescreen()
+    
+    leave = False
+    
+    while leave == False:
+        homescreen()
 
 main()
