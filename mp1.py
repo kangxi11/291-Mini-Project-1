@@ -22,19 +22,6 @@ def clear_screen():
     print('----------------------------------------------------------------------------------------------')
     print('\n\n\n\n')
 
-def officer_menu(user):
-    print('Hello Officer', user[4])
-    print('Please choose a task: ')
-
-    print('1. Issue a Ticket')
-    print('2. Find a Car Owner')
-    choice = input('Choice: ')
-
-    clear_screen()
-
-    if choice == '1':
-        o1(c, connection)
-
 def agent_menu(user):
     print('You have successfully logged')
     print(user)
@@ -46,7 +33,7 @@ def login():
     clear_screen()
 
     print('Please enter your UID and PWD')
-    print('Enter ''exit'' to exit or ''logout'' to logout at anytime')
+    print('Enter "exit" to exit')
 
 
     uid = None
@@ -55,7 +42,11 @@ def login():
     while True:
         try:
             input_uid = input('UID: ')
+            if input_uid == 'exit':
+                sys.exit()
             input_pass = getpass.getpass('Password: ')
+            if input_pass == 'exit':
+                sys.exit()
             c.execute ("SELECT * FROM users WHERE uid = :uid COLLATE NOCASE and pwd = :pwd;", {"uid":input_uid, "pwd":input_pass})
             user = c.fetchall()
 
@@ -74,7 +65,7 @@ def login():
     if str(user[2]) == 'a':
         agent(user)
     if str(user[2]) == 'o':
-        officer_menu(user)
+        officer_menu(user, c, connection)
         
     
 def homescreen():
@@ -90,7 +81,6 @@ def homescreen():
     if user_choice == '2':
         clear_screen()
         print('Service Alberta is now exiting')
-        time.sleep(1)
         sys.exit()
 
 def main():
