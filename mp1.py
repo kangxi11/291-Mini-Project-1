@@ -58,7 +58,7 @@ def login():
     clear_screen()
 
     if str(user[2]) == 'a':
-        agent_menu(user)
+        agent_menu(user, c, connection)
     if str(user[2]) == 'o':
         officer_menu(user, c, connection)
         
