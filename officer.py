@@ -165,11 +165,41 @@ def o2 (c, connection):
             break
 
     
-    c.execute('SELECT * FROM vehicles v, registrations r WHERE v.vin = r.vin %s;' %(data_string))
-
+    c.execute('SELECT DISTINCT v.make, v.model, v.year, v.color, r.plate FROM vehicles v, registrations r WHERE v.vin = r.vin %s;' %(data_string))
     cars = c.fetchall()
-    for x in cars:
-        print(x) 
+
+    clear_screen()
+    if len(cars) >= 4:
+        print('Choose one of the following cars:')
+        print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
+
+        for i in range (len(cars)):
+            print(str(i+1)+ '.' , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
+
+        choice = input('Choice: ')
+
+        cars = ( (cars[int(choice)-1]), )
+
+    # now cars is a tuple with 1-3 tuples
+    # want the latest registration of each car
+
+    result = []
+
+    for car in cars:
+        c.execute('''SELECT v.make, v.model, v.year, v.color, r.plate, r.regdate, r.expiry, r.fname, r.lname
+                    FROM vehicles v, registrations r
+                    WHERE v.make = ? and v.model = ? and v.year = ? and v.color = ? and r.plate = ? and r.vin = v.vin
+                    ORDER BY r.regdate DESC
+                    limit 1;''', car)
+        result.append(c.fetchone())
+
+    clear_screen()
+    print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' '), ' ' , 
+            'Reg. Date'.ljust(12, ' ') , ' ' , 'Expiry Date'.ljust(12, ' ') , ' ' , 'First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') + '\n')
+    for i in range (len(result)):
+        print(str(i+1)+ '.' , result[i][0].ljust(12, ' ') , '|' , result[i][1].ljust(12, ' ') , '|' , str(result[i][2]).ljust(12, ' ') , '|' , result[i][3].ljust(12, ' ') , '|', result[i][4].ljust(12, ' ')
+                , '|' , result[i][5].ljust(12, ' ') , '|' , str(result[i][6]).ljust(12, ' ') , '|' , str(result[i][7]).ljust(12, ' ') , '|' , str(result[i][8]).ljust(12, ' '))
+
 
 
     
