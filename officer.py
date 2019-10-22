@@ -2,6 +2,7 @@
 import sqlite3
 import time
 import datetime
+import sys
 
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
@@ -29,6 +30,8 @@ def officer_menu(user, c, connection):
             return
         if choice == '1':
             o1(c, connection)
+        if choice == '2':
+            o2(c, connection)
 
 def o1(c, connection):
     while True:
@@ -47,7 +50,7 @@ def o1(c, connection):
             reg = reg[0]
             break
     
-    c.execute("SELECT * FROM vehicles WHERE vin = ?;", (reg[4], ))
+    c.execute("SELECT * FROM vehicles WHERE vin = ? COLLATE NOCASE;", (reg[4], ))
     vehicle = c.fetchone()
 
     print(reg[5], reg[6], '|', vehicle[1], '|', vehicle[2], '|', vehicle[3], '|', vehicle[4])
@@ -123,9 +126,50 @@ def o1(c, connection):
     connection.commit()
 
 
+def o2 (c, connection):
+    
+    while True:
+        try:
+            make = input('Make of car: ')
+            model = input('Model of car: ')
+            year = input('Year of car: ')
+            color = input('Color of car: ')
+            plate = input('Plate of car: ')
 
+            if make != '': # user did not input anything
+                make = 'v.make = \'' + make + '\' COLLATE NOCASE'
+            if model != '':
+                model = 'v.model = \'' + model + '\' COLLATE NOCASE'
+            if year != '':
+                year = 'v.year = ' + year
+            if color != '':
+                color = 'v.color = \'' + color + '\' COLLATE NOCASE'
+            if plate != '':
+                plate = 'r.plate = \'' + plate + '\' COLLATE NOCASE'
 
+            data_string = ''
+            a = [make, model, year, color, plate]
+
+            for i in range(len(a)):
+                if a[i] != '':
+                    data_string = data_string + ' AND '
+                    data_string = data_string + a[i]   
+
+            if data_string == '':
+                raise AssertionError('*** MUST ENTER AT LEAST ONE ATTRIBUTE ***')
+        
+        except AssertionError as error:
+            print(error)
+
+        else:
+            break
 
     
+    c.execute('SELECT * FROM vehicles v, registrations r WHERE v.vin = r.vin %s;' %(data_string))
+
+    cars = c.fetchall()
+    for x in cars:
+        print(x) 
+
 
     
