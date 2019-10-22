@@ -121,6 +121,10 @@ def o1(c, connection):
     c.execute('INSERT INTO tickets (tno, regno, fine, violation, vdate) VALUES (?,?,?,?,?);', ticket) 
     connection.commit()
 
+    print('\nTicket: (',tno,'|',regno,'|',fine,'|',violation,'|',vdate,') successfully added')
+    garbage = input('Press Enter to Continue')
+
+
 
 def o2 (c, connection):
     
