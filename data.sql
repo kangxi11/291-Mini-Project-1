@@ -31,13 +31,13 @@ insert into marriages values (200, '1925-07-13', 'Idaho, US', 'Walt', 'Disney', 
 insert into marriages values (201, '1969-05-03', 'Los Angeles, US', 'Lillian', 'Bounds', 'John', 'Truyens');
 
 
-insert into vehicles values ('U200', 'Chevrolet', 'Camaro', 1969, 'red');
+insert into vehicles values ('U200', 'Chevrolet', 'Camaro', 2012, 'red');
 insert into vehicles values ('U201', 'Toyoto', 'Corolla', 2012, 'red');
-insert into vehicles values ('U202', 'Toyoto', 'RAV4', 2013, 'red');
-insert into vehicles values ('U203', 'Kia', 'Cube', 2013, 'red');
+insert into vehicles values ('U202', 'Toyoto', 'RAV4', 2012, 'red');
+insert into vehicles values ('U203', 'Kia', 'Cube', 2012, 'red');
 
-insert into vehicles values ('U300', 'Mercedes', 'SL 230', 1964, 'black');
-insert into vehicles values ('U301', 'Audi', 'A4', 2013, 'black');
+insert into vehicles values ('U300', 'Mercedes', 'SL 230', 2012, 'black');
+insert into vehicles values ('U301', 'Audi', 'A4', 2012, 'black');
 insert into vehicles values ('U302', 'Toyoto', 'RAV4', 2012, 'black');
 insert into vehicles values ('U400', 'Chevrolet', 'Camaro', 2012, 'black');
 
@@ -48,7 +48,7 @@ insert into vehicles values ('U502', 'Chevrolet', 'Camaro', 2012, 'white');
 insert into vehicles values ('U505', 'Audi', 'A4', 2013, 'white');
 insert into vehicles values ('U506', 'Audi', 'A4', 2014, 'white');
 insert into vehicles values ('U508', 'Audi', 'A4', 2016, 'white');
-insert into vehicles values ('U509', 'Audi', 'A4', 2014, 'white');
+insert into vehicles values ('U509', 'Audi', 'A4', 2000, 'white');
 
 
 
@@ -67,6 +67,10 @@ insert into registrations values (309, '2012-01-26','2030-07-25', 'Z7F9J2','U502
 insert into registrations values (310, '2013-01-26','2021-07-25', 'Z7F9J2','U505', 'Stacey', 'Long');
 insert into registrations values (314, '2019-03-26','2041-07-25', 'Z7F9J2','U508', 'Davood', 'Rafiei');
 insert into registrations values (315, '2019-04-26','2025-07-25', 'Z7F9J2','U509', 'Davood', 'Rafiei');
+insert into registrations values (317, '2019-03-26','2025-06-25', 'Z7F9J2','U509', 'Davood', 'Rafiei');
+insert into registrations values (318, '2019-04-26','2025-07-25', 'Z7F9J2', 'U509', 'Davood', 'Rafiei');
+insert into registrations values (319, '2019-08-26','2025-08-25', 'Z7F9J2', 'U509', 'Davood', 'Rafiei');
+
 
 
 insert into tickets values (400,300,4,'speeding','1964-08-20');
