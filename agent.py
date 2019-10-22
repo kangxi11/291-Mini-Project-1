@@ -72,10 +72,10 @@ def getAddress(prompt, length):
             print(error)
         else:
             break
-       return address
+        return address
 
- def getPhone(prompt, length):
-     while True:
+def getPhone(prompt, length):
+    while True:
         try:
             phone = input(prompt)
             if allowNull and len(phone) == 0:
@@ -87,7 +87,7 @@ def getAddress(prompt, length):
             print(error)
         else:
             break
-       return phone
+    return phone
    
 
 def agent_menu(user, c, connection):
