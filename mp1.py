@@ -20,12 +20,7 @@ def connect(path):
 
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
-    print('\n\n\n\n')
-
-def agent_menu(user):
-    print('You have successfully logged')
-    print(user)
-    
+    print('\n\n\n\n')   
 
 def login():
     global connection, c
@@ -63,7 +58,7 @@ def login():
     clear_screen()
 
     if str(user[2]) == 'a':
-        agent(user)
+        agent_menu(user)
     if str(user[2]) == 'o':
         officer_menu(user, c, connection)
         
