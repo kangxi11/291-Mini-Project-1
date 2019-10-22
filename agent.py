@@ -3,6 +3,7 @@ import sqlite3
 import sys
 import datetime
 import time
+from datetime import date
 
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
@@ -16,8 +17,6 @@ def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('Error: Must be between 1 and %d characters' % (length))
 
-<<<<<<< HEAD
-=======
 def getName(prompt, length):
     while True:
         try:
@@ -92,7 +91,6 @@ def getPhone(prompt, length):
     return phone
    
 
->>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
 def agent_menu(user, c, connection):
     logout = False
     clear_screen()
@@ -117,8 +115,16 @@ def agent_menu(user, c, connection):
             return
         if choice == '1':
             a1(c, connection)
+        if choice == '2':
+            a2(c, connection)
+        if choice == '3':
+            a3(c, connection)
+        if choice == '4':
+            a4(c, connection)
         if choice == '5':
             a5(c, connection)
+        if choice == '6':
+            a6(c, connection)
 
 def a1(c, connection):
     cur_date = datetime.date.today()
@@ -181,9 +187,30 @@ def a1(c, connection):
         address = mother[4]
         phone = mother[5]
 
-<<<<<<< HEAD
 def a4(c, connection):
-    
+
+    vin = input("Enter VIN: ")
+    sf_name = input("Enter seller's first name: ")
+    sl_name = input("Enter seller's last name: ")
+    bf_name = input("Enter buyer's first name: ")
+    bl_name = input("Enter buyer's last name: ")
+    plate = input("Enter the plate number: ")
+
+    c.execute("SELECT R.fname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
+    cf_name = fetchone()
+    c.execute("SELECT R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
+    cl_name = fetchone()
+
+    if cf_name != sf_name or cl_name != sl_name:
+        raise AssertionError("You are not the current owner of the car! Dialing 911...")
+
+    current_date = datetime.date.today()
+    c.execute('''UPDATE registrations SET expiry=? WHERE registrations.fname=? AND registrations.lname=?;''', (current_date, cf_name, cl_name))
+
+    c.execute("SELECT regno FROM registrations ORDER BY regno DESC")
+    new_regno = fetchone()
+    new_reg = (new_regno+1, current_date, plate, vin, bf_name, bl_name)
+    c.execute("INSERT INTO registrations () VALUES (?,?, DATE('now', +1 year),?,?,?,?);", new_reg)
 
 def a5(c, connection):
 
@@ -194,12 +221,12 @@ def a5(c, connection):
     except ValueError as error:
         print(error)
 
-    c.execute("SELECT fine FROM tickets, payments WHERE tickets.tno = payments.tno AND tno=?", (tno))
+    c.execute("SELECT fine FROM tickets, payments WHERE tickets.tno = payments.tno AND tno=?;", (tno))
     fine = fetchone()
     pdate = datetime.date.today()
     amount = input("Enter ticket number: ")
     payment = (tno, pdate, amount)
-    c.execute('INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);', payment)
+    c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
 
     if (len(fine) == 0):
         raise AssertionError("You must enter a valid ticket number.")
@@ -210,30 +237,9 @@ def a5(c, connection):
             amount = input("Enter amount: ")
             pdate = datetime.date.today()
             payment = (tno, pdate, amount)
-            c.execute('INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);', payment)
+            c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
 
         except AssertionError as error:
             print(error)
 
 #def a6(c, connection):
-
-
-persons(fname, lname, bdate, bplace, address, phone)
-births(regno, fname, lname, regdate, regplace, gender, f_fname, f_lname, m_fname, m_lname)
-marriages (regno, regdate, regplace, p1_fname, p1_lname, p2_fname, p2_lname)
-vehicles(vin,make,model,year,color)
-registrations(regno, regdate, expiry, plate, vin, fname, lname)
-tickets(tno,regno,fine,violation,vdate)
-demeritNotices(ddate, fname, lname, points, desc)
-payments(tno, pdate, amount) 
-users(uid, pwd, utype, fname, lname, city)
-=======
-    
-    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':m_fname, 'lname':m_lname})
-    mother = c.fetchall()
->>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
-
-
-
-
-
