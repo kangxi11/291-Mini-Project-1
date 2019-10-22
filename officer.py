@@ -92,7 +92,7 @@ def o1(c, connection):
 
         except ValueError:
             print("*** INVALID DATE FORMAT ***")
-            
+
         else:
             break
 
@@ -129,10 +129,12 @@ def o2 (c, connection):
             make = input('Make of car: ')
             model = input('Model of car: ')
             year = input('Year of car: ')
-            test = int(year)
+            
+            if year != '':
+                test = int(year)
 
-            if int(year) <= 0:
-                raise AssertionError('*** YEAR MUST BE GREATER THAN 0 ***')
+                if int(year) <= 0:
+                    raise AssertionError('*** YEAR MUST BE GREATER THAN 0 ***')
             
             color = input('Color of car: ')
             plate = input('Plate of car: ')
@@ -177,7 +179,7 @@ def o2 (c, connection):
             try:
                 clear_screen()
                 print('Choose one of the following cars:')
-                print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
+                print('     '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
 
                 for i in range (len(cars)):
                     print( (str(i+1)+'.').ljust(5, ' ') , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
@@ -216,6 +218,7 @@ def o2 (c, connection):
                     , '|' , result[i][5].ljust(12, ' ') , '|' , str(result[i][6]).ljust(12, ' ') , '|' , str(result[i][7]).ljust(12, ' ') , '|' , str(result[i][8]).ljust(12, ' '))
     else:
         print('*** NO MATCHES ***')
+    
     garbage = input('Press Enter to Continue')
 
 
