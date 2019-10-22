@@ -168,17 +168,27 @@ def o2 (c, connection):
     c.execute('SELECT DISTINCT v.make, v.model, v.year, v.color, r.plate FROM vehicles v, registrations r WHERE v.vin = r.vin %s;' %(data_string))
     cars = c.fetchall()
 
-    clear_screen()
     if len(cars) >= 4:
-        print('Choose one of the following cars:')
-        print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
+        while True:
+            try:
+                clear_screen()
+                print('Choose one of the following cars:')
+                print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
 
-        for i in range (len(cars)):
-            print(str(i+1)+ '.' , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
+                for i in range (len(cars)):
+                    print( (str(i+1)+'.').ljust(5, ' ') , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
 
-        choice = input('Choice: ')
+                choice = input('Choice: ')
 
-        cars = ( (cars[int(choice)-1]), )
+                if (int(choice) < 1) or (int(choice) > len(cars)):
+                    raise AssertionError('*** CHOICE OUT OF RANGE ***')
+            
+            except AssertionError as error:
+                print(error)
+
+            else:
+                cars = ( (cars[int(choice)-1]), )
+                break
 
     # now cars is a tuple with 1-3 tuples
     # want the latest registration of each car
@@ -194,12 +204,15 @@ def o2 (c, connection):
         result.append(c.fetchone())
 
     clear_screen()
-    print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' '), ' ' , 
-            'Reg. Date'.ljust(12, ' ') , ' ' , 'Expiry Date'.ljust(12, ' ') , ' ' , 'First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') + '\n')
-    for i in range (len(result)):
-        print(str(i+1)+ '.' , result[i][0].ljust(12, ' ') , '|' , result[i][1].ljust(12, ' ') , '|' , str(result[i][2]).ljust(12, ' ') , '|' , result[i][3].ljust(12, ' ') , '|', result[i][4].ljust(12, ' ')
-                , '|' , result[i][5].ljust(12, ' ') , '|' , str(result[i][6]).ljust(12, ' ') , '|' , str(result[i][7]).ljust(12, ' ') , '|' , str(result[i][8]).ljust(12, ' '))
-
+    if (len(result) > 0):
+        print('   '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' '), ' ' , 
+                'Reg. Date'.ljust(12, ' ') , ' ' , 'Expiry Date'.ljust(12, ' ') , ' ' , 'First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') + '\n')
+        for i in range (len(result)):
+            print(str(i+1)+ '.' , result[i][0].ljust(12, ' ') , '|' , result[i][1].ljust(12, ' ') , '|' , str(result[i][2]).ljust(12, ' ') , '|' , result[i][3].ljust(12, ' ') , '|', result[i][4].ljust(12, ' ')
+                    , '|' , result[i][5].ljust(12, ' ') , '|' , str(result[i][6]).ljust(12, ' ') , '|' , str(result[i][7]).ljust(12, ' ') , '|' , str(result[i][8]).ljust(12, ' '))
+    else:
+        print('*** NO MATCHES ***')
+    garbage = input('Press Enter to Continue')
 
 
     
