@@ -16,6 +16,83 @@ def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('Error: Must be between 1 and %d characters' % (length))
 
+<<<<<<< HEAD
+=======
+def getName(prompt, length):
+    while True:
+        try:
+            name = input(prompt)
+            assertAlpha(name)
+            assertLength(name, length)
+        except AssertionError as error:
+            print(error)
+        else:
+            break
+    return name
+
+# allowNull is a bool, 1 if the date is allowed to be null, 0 otherwise
+def getDate(prompt, cur_date, allowNull):
+    while True:
+        try:
+            date = input(prompt)
+            if allowNull and len(date) == 0:
+                date = None
+            else:
+                if datetime.datetime.strptime(date, '%Y-%m-%d').date() > cur_date:
+                    raise IndexError()
+        except ValueError:
+            print('Invalid Date Format')
+        except IndexError:
+            print('Date cannot be in the future')
+        else:
+            break
+    return date
+
+def getBPlace(prompt, length, allowNull):
+    while True:
+        try:
+            bplace = input(prompt)
+            if allowNull and len(bplace) == 0:
+                bplace = None
+            else:
+                assertLength(bplace, length)
+        except AssertionError as error:
+            print(error)
+        else:
+            break
+    return bplace
+
+def getAddress(prompt, length):
+     while True:
+        try:
+            address = input(prompt)
+            if allowNull and len(address) == 0:
+                address = None
+            else:
+                assertLength(address, length)
+        except AssertionError as error:
+            print(error)
+        else:
+            break
+        return address
+
+def getPhone(prompt, length):
+    while True:
+        try:
+            phone = input(prompt)
+            if allowNull and len(phone) == 0:
+                phone = None
+            else:
+                if len(phone) != 12:
+                    raise AssertionError('Must be 12 characters')
+        except AssertionError as error:
+            print(error)
+        else:
+            break
+    return phone
+   
+
+>>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
 def agent_menu(user, c, connection):
     logout = False
     clear_screen()
@@ -45,28 +122,11 @@ def agent_menu(user, c, connection):
 
 def a1(c, connection):
     cur_date = datetime.date.today()
-
+    
     # get all user input
     print('Please provide the following information for the birth: ')
-    while True:
-        try:
-            fname = input('First name: ')
-            assertAlpha(fname)
-            assertLength(fname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
-
-    while True:
-        try:
-            lname = input('Last name: ')
-            assertAlpha(lname)
-            assertLength(lname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
+    fname = getName('First name: ', 12)
+    lname = getName('Last name: ', 12)
 
     while True:
         try:
@@ -83,66 +143,13 @@ def a1(c, connection):
         else:
             break
 
-    while True:
-        try:
-            bdate = input('Birth date (YYYY-MM-DD): ')
-            if datetime.datetime.strptime(bdate, '%Y-%m-%d').date() > cur_date:
-                raise IndexError()
-        except ValueError:
-            print('Invalid Date Format')
-        except IndexError:
-            print('Date cannot be in the future')
-        else:
-            break
+    bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 0)
+    bplace = getBPlace('Birth Place: ', 20, 0)
             
-    while True:
-        try:
-            bplace = input('Birth place: ')
-            assertLength(bplace, 20)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
-
-    while True:
-        try:
-            f_fname = input('Father\'s first name: ')
-            assertAlpha(f_fname)
-            assertLength(f_fname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
-
-    while True:
-        try:
-            lname = input('Father\'s last name: ')
-            assertAlpha(f_lname)
-            assertLength(f_lname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
-
-    while True:
-        try:
-            m_fname = input('Mother\'s first name: ')
-            assertAlpha(m_fname)
-            assertLength(m_fname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
-
-    while True:
-        try:
-            lname = input('Mother\'s last name: ')
-            assertAlpha(m_lname)
-            assertLength(m_lname, 12)
-        except AssertionError as error:
-            print(error)
-        else:
-            break
+    f_fname = getName('Father\'s first name: ', 12)
+    f_lname = getName('Father\'s last name: ', 12)
+    m_fname = getName('Mother\'s first name: ', 12)
+    m_lname = getName('Mother\'s last name: ', 12)
 
     # make unique regno
     c.execute('SELECT regno FROM births;')
@@ -162,9 +169,11 @@ def a1(c, connection):
     # prompt user for mother's info
     if len(mother) == 0:
         print('Please provide the following information for the mother: ')
-        print('If you do not want to provide a certain value, just hit enter')
-        m_bdate = input('Birth date: ')
-        m_bplace = input
+        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        m_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        m_bplace = getBPlace('Birth place: ', 20, 1)
+        address = getAddress('Address: ', 30)
+        phone = getPhone('Phone number: ', 12)
         
     # give newborn the mother's address and phone
     else:
@@ -172,6 +181,7 @@ def a1(c, connection):
         address = mother[4]
         phone = mother[5]
 
+<<<<<<< HEAD
 def a4(c, connection):
     
 
@@ -217,9 +227,13 @@ tickets(tno,regno,fine,violation,vdate)
 demeritNotices(ddate, fname, lname, points, desc)
 payments(tno, pdate, amount) 
 users(uid, pwd, utype, fname, lname, city)
+=======
+    
+    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':m_fname, 'lname':m_lname})
+    mother = c.fetchall()
+>>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
 
 
 
 
 
- 
