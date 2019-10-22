@@ -78,25 +78,21 @@ def o1(c, connection):
             vdate = input('Violation Date (YYYY-MM-DD): ')
 
             if vdate == '':
-                raise AssertionError("Today's Date")
+                vdate = time.strftime("%Y-%m-%d")
 
             datetime.datetime.strptime(vdate, '%Y-%m-%d')
 
             year, month, day = vdate.split('-')
 
             if datetime.datetime.strptime(vdate, '%Y-%m-%d') > datetime.datetime.strptime(time.strftime("%Y-%m-%d"), '%Y-%m-%d'):
-                raise IndexError()
+                raise AssertionError('*** CANNOT BE IN THE FUTURE ***')
 
         except AssertionError as error:
-            vdate = time.strftime("%Y-%m-%d")
-            break
+            print(error)
 
         except ValueError:
             print("*** INVALID DATE FORMAT ***")
-
-        except IndexError:
-            print("*** CANNOT BE IN THE FUTURE ***")
-
+            
         else:
             break
 
@@ -133,6 +129,11 @@ def o2 (c, connection):
             make = input('Make of car: ')
             model = input('Model of car: ')
             year = input('Year of car: ')
+            test = int(year)
+
+            if int(year) <= 0:
+                raise AssertionError('*** YEAR MUST BE GREATER THAN 0 ***')
+            
             color = input('Color of car: ')
             plate = input('Plate of car: ')
 
@@ -158,6 +159,9 @@ def o2 (c, connection):
             if data_string == '':
                 raise AssertionError('*** MUST ENTER AT LEAST ONE ATTRIBUTE ***')
         
+        except ValueError:
+            print('*** YEAR MUST BE AN INTEGER ***')
+
         except AssertionError as error:
             print(error)
 
