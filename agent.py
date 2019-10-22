@@ -16,8 +16,6 @@ def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('Error: Must be between 1 and %d characters' % (length))
 
-
-
 def agent_menu(user, c, connection):
     logout = False
     clear_screen()
@@ -42,6 +40,8 @@ def agent_menu(user, c, connection):
             return
         if choice == '1':
             a1(c, connection)
+        if choice == '5':
+            a5(c, connection)
 
 def a1(c, connection):
     cur_date = datetime.date.today()
@@ -171,6 +171,54 @@ def a1(c, connection):
         mother = mother[0]  # extract tuple from list of tuple
         address = mother[4]
         phone = mother[5]
+
+def a4(c, connection):
+    
+
+def a5(c, connection):
+
+    tno = input("Enter ticket number: ")
+
+    try:
+        int(tno)
+    except ValueError as error:
+        print(error)
+
+    c.execute("SELECT fine FROM tickets, payments WHERE tickets.tno = payments.tno AND tno=?", (tno))
+    fine = fetchone()
+    pdate = datetime.date.today()
+    amount = input("Enter ticket number: ")
+    payment = (tno, pdate, amount)
+    c.execute('INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);', payment)
+
+    if (len(fine) == 0):
+        raise AssertionError("You must enter a valid ticket number.")
+
+    while ((fine - amount) != 0):
+        try:
+            tno = input("Enter ticket number: ")
+            amount = input("Enter amount: ")
+            pdate = datetime.date.today()
+            payment = (tno, pdate, amount)
+            c.execute('INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);', payment)
+
+        except AssertionError as error:
+            print(error)
+
+#def a6(c, connection):
+
+
+persons(fname, lname, bdate, bplace, address, phone)
+births(regno, fname, lname, regdate, regplace, gender, f_fname, f_lname, m_fname, m_lname)
+marriages (regno, regdate, regplace, p1_fname, p1_lname, p2_fname, p2_lname)
+vehicles(vin,make,model,year,color)
+registrations(regno, regdate, expiry, plate, vin, fname, lname)
+tickets(tno,regno,fine,violation,vdate)
+demeritNotices(ddate, fname, lname, points, desc)
+payments(tno, pdate, amount) 
+users(uid, pwd, utype, fname, lname, city)
+
+
 
 
 
