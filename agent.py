@@ -11,11 +11,11 @@ def clear_screen():
 
 def assertAlpha(value):
     if not value.isalpha():
-        raise AssertionError('Error: Can only contain alphabetical characters')
+        raise AssertionError('Can only contain alphabetical characters')
 
 def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
-        raise AssertionError('Error: Must be between 1 and %d characters' % (length))
+        raise AssertionError('Must be between 1 and %d characters' % (length))
 
 def getName(prompt, length):
     while True:
@@ -61,8 +61,8 @@ def getBPlace(prompt, length, allowNull):
             break
     return bplace
 
-def getAddress(prompt, length):
-     while True:
+def getAddress(prompt, length, allowNull):
+    while True:
         try:
             address = input(prompt)
             if allowNull and len(address) == 0:
@@ -73,9 +73,9 @@ def getAddress(prompt, length):
             print(error)
         else:
             break
-        return address
+    return address
 
-def getPhone(prompt, length):
+def getPhone(prompt, length, allowNull):
     while True:
         try:
             phone = input(prompt)
@@ -88,8 +88,7 @@ def getPhone(prompt, length):
             print(error)
         else:
             break
-    return phone
-   
+    return phone  
 
 def agent_menu(user, c, connection):
     logout = False
@@ -111,22 +110,24 @@ def agent_menu(user, c, connection):
 
         if choice == 'exit':
             sys.exit()
-        if choice == 'logout':
+        elif choice == 'logout':
             return
-        if choice == '1':
-            a1(c, connection)
-        if choice == '2':
-            a2(c, connection)
-        if choice == '3':
-            a3(c, connection)
-        if choice == '4':
+        elif choice == '1':
+            a1(c, connection, user)
+        elif choice == '2':
+            a2(c, connection, user)
+        elif choice == '3':
+            a3(c, connection, user)
+        elif choice == '4':
             a4(c, connection)
-        if choice == '5':
+        elif choice == '5':
             a5(c, connection)
-        if choice == '6':
+        elif choice == '6':
             a6(c, connection)
+        else:
+            print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
 
-def a1(c, connection):
+def a1(c, connection, user):
     cur_date = datetime.date.today()
     
     # get all user input
@@ -170,22 +171,160 @@ def a1(c, connection):
 
     # check if mother is in db
     c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':m_fname, 'lname':m_lname})
-    mother = c.fetchall()
+    mother = c.fetchone()
     
     # prompt user for mother's info
-    if len(mother) == 0:
-        print('Please provide the following information for the mother: ')
+    if mother == None:
+        print('Please provide the following information about the mother: ')
         print('If you do not want to provide a certain value, just hit enter to skip that value')
         m_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
         m_bplace = getBPlace('Birth place: ', 20, 1)
-        address = getAddress('Address: ', 30)
-        phone = getPhone('Phone number: ', 12)
+        address = getAddress('Address: ', 30, 1)
+        phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        # insert her into persons
+        c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (m_fname, m_lname, m_bdate, m_bplace, address, phone))
+        connection.commit()
+        c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':m_fname, 'lname':m_lname})
+        mother = c.fetchone()        
         
     # give newborn the mother's address and phone
     else:
-        mother = mother[0]  # extract tuple from list of tuple
         address = mother[4]
         phone = mother[5]
+
+    # check if father is in db
+    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':f_fname, 'lname':f_lname})
+    father = c.fetchone()
+
+    if father == None:
+        print('Please provide the following information about the father: ')
+        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        f_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        f_bplace = getBPlace('Birth place: ', 20, 1)
+        f_address = getAddress('Address: ', 30, 1)
+        f_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        # insert him into persons
+        c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (f_fname, f_lname, f_bdate, f_bplace, f_address, f_phone))
+        connection.commit()
+        # get father's info from db
+        c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':f_fname, 'lname':f_lname})
+        father = c.fetchone()
+        
+    # put newborn into persons
+    c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (fname, lname, bdate, bplace, address, phone))
+    # put birth into db
+    c.execute('INSERT INTO births (regno, fname, lname, regdate, regplace, gender, f_fname, f_lname, m_fname, m_lname) VALUES (?,?,?,?,?,?,?,?,?,?);', (regno, fname, lname, cur_date, user[5], gender, father[0], father[1], mother[0], mother[1]))
+    connection.commit()
+    
+    print('Birth successfully registered.')
+    time.sleep(2)
+    clear_screen()
+    
+def a2(c, connection, user):
+    cur_date = datetime.date.today()
+
+    # get partner names
+    print('Please provide the following information for the marriage: ')
+    p1_fname = getName('Partner 1\'s first name: ', 12)
+    p1_lname = getName('Partner 1\'s last name: ', 12)    
+    p2_fname = getName('Partner 2\'s first name: ', 12)
+    p2_lname = getName('Partner 2\'s last name: ', 12)
+    
+    # check if partner 1 is in db
+    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':p1_fname, 'lname':p1_lname})
+    partner1 = c.fetchone()
+
+    # get partner 1 info if not in db
+    if partner1 == None:
+        print('Please provide the following information about %s: ' % (p1_fname+' '+p1_lname))
+        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        p1_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        p1_bplace = getBPlace('Birth place: ', 20, 1)
+        p1_address = getAddress('Address: ', 30, 1)
+        p1_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        # insert partner 1 into persons
+        c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (p1_fname, p1_lname, p1_bdate, p1_bplace, p1_address, p1_phone))
+        connection.commit()
+        # get partner 1's info from db
+        c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':p1_fname, 'lname':p1_lname})
+        partner1 = c.fetchone()
+
+    # check if partner 2 is in db
+    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':p2_fname, 'lname':p2_lname})
+    partner2 = c.fetchone()
+
+    # get partner 2 info if not in db
+    if partner2 == None:
+        print('Please provide the following information about %s: ' % (p2_fname+' '+p2_lname))
+        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        p2_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        p2_bplace = getBPlace('Birth place: ', 20, 1)
+        p2_address = getAddress('Address: ', 30, 1)
+        p2_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        # insert partner 2 into persons
+        c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (p2_fname, p2_lname, p2_bdate, p2_bplace, p2_address, p2_phone))
+        connection.commit()
+        # get partner 2's info from db
+        # this gives case insensitivity when registering same person for 2 different marriages
+        c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':p2_fname, 'lname':p2_lname})
+        partner2 = c.fetchone()        
+    
+    # make unique regno
+    c.execute('SELECT regno FROM marriages;')
+    temp = c.fetchall()
+    used_regno = []
+    for num in temp:
+        used_regno.append(num[0])
+
+    regno = 1
+    while regno in used_regno:
+        regno += 1
+        
+    # put marriage into db
+    c.execute('INSERT INTO marriages (regno, regdate, regplace, p1_fname, p1_lname, p2_fname, p2_lname) VALUES (?,?,?,?,?,?,?);', (regno, cur_date, user[5], partner1[0], partner1[1], partner2[0], partner2[1]))
+    connection.commit()
+
+    print('Marriage successfully registered.')
+    time.sleep(2)
+    clear_screen()
+    
+def a3(c, connection, user):
+    cur_date = datetime.date.today()
+    while True:
+        try:
+            num = input('Please enter the registration number to renew: ')
+            # check input
+            num = int(num)
+        except ValueError:
+            print('Must enter a number')
+        else:
+            break
+    # get regno from db
+    c.execute('SELECT * FROM registrations WHERE regno = :num;', {'num':num})
+    registration = c.fetchone()
+    
+    # if regno is not in system
+    if registration == None:
+        print('That registration number is not in our system.\nReturning to menu screen.')
+        time.sleep(2)
+        clear_screen()
+        
+    # regno in system
+    else:
+        old_expiry = datetime.datetime.strptime(registration[2], '%Y-%m-%d').date()
+        # set new expiry to one year from now
+        if old_expiry <= cur_date:
+            new_expiry = cur_date.replace(year = cur_date.year + 1)
+            c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
+            connection.commit()
+        # set new expiry to one year from current expiry
+        else:
+            new_expiry = old_expiry.replace(year = old_expiry.year + 1)
+            c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
+            connection.commit()            
+        print('Registration successfully renewed.')
+        time.sleep(2)
+        clear_screen()        
 
 def a4(c, connection):
 
