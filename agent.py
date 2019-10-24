@@ -242,4 +242,39 @@ def a5(c, connection):
         except AssertionError as error:
             print(error)
 
-#def a6(c, connection):
+def a6(c, connection):
+
+    fname = input("Enter your first name: ")
+    lname = input("Enter your last name: ")
+    option = input("Press 't' if you would like to see your tickets ordered from latest to oldest")
+
+    if lower.option() == "t":
+        c.execute("SELECT tickets.tno FROM tickets, registrations WHERE tickets.fname = registrations.fname AND tickets.lname = registrations.lname ORDER BY tno DESC")
+
+    c.execute("SELECT COUNT(T.tno) FROM tickets, registrations WHERE tickets.fname = registrations.fname AND tickets.lname = registrations.lname")
+    num_tkts = c.fetchone()
+    c.execute("SELECT COUNT(*) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname")
+    num_dem = c.fetchone()
+    c.execute("SELECT D.SUM(points) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname AND DATE('')")
+    pts_2 = c.fetchone()
+    c.execute("SELECT D.SUM(points) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname AND DATE('')")
+    pts_life = c.fetchone()
+
+
+Get a driver abstract.The user should be able to enter a first name and a last name and get a driver abstract, 
+which includes the number of tickets, the number of demerit notices, the total number of demerit points received both within 
+the past two years and within the lifetime. The user should be given the option to see the tickets ordered from the latest to 
+the oldest. For each ticket, you will report the ticket number, the violation date, the violation description, the fine, the 
+registration number and the make and model of the car for which the ticket is issued. If there are more than 5 tickets, at most 5 
+tickets will be shown at a time, and the user can select to see more.
+
+
+persons(fname, lname, bdate, bplace, address, phone)
+births(regno, fname, lname, regdate, regplace, gender, f_fname, f_lname, m_fname, m_lname)
+marriages (regno, regdate, regplace, p1_fname, p1_lname, p2_fname, p2_lname)
+vehicles(vin,make,model,year,color)
+registrations(regno, regdate, expiry, plate, vin, fname, lname)
+tickets(tno,regno,fine,violation,vdate)
+demeritNotices(ddate, fname, lname, points, desc)
+payments(tno, pdate, amount) 
+users(uid, pwd, utype, fname, lname, city)
