@@ -277,4 +277,6 @@ registrations(regno, regdate, expiry, plate, vin, fname, lname)
 tickets(tno,regno,fine,violation,vdate)
 demeritNotices(ddate, fname, lname, points, desc)
 payments(tno, pdate, amount) 
+
 users(uid, pwd, utype, fname, lname, city)
+
