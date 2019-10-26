@@ -1,4 +1,3 @@
-# for all the functionalities of the agent
 import sqlite3
 import sys
 import datetime
@@ -187,6 +186,7 @@ def a1(c, connection):
         address = mother[4]
         phone = mother[5]
 
+"""
 def a4(c, connection):
 
     vin = input("Enter VIN: ")
@@ -278,3 +278,4 @@ tickets(tno,regno,fine,violation,vdate)
 demeritNotices(ddate, fname, lname, points, desc)
 payments(tno, pdate, amount) 
 users(uid, pwd, utype, fname, lname, city)
+"""
