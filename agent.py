@@ -121,8 +121,8 @@ def agent_menu(user, c, connection):
             a4(c, connection)
         elif choice == '5':
             a5(c, connection)
-        elif choice == '6':
-            a6(c, connection)
+        #elif choice == '6':
+            #a6(c, connection)
         else:
             print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
 
@@ -334,19 +334,27 @@ def a4(c, connection):
     bl_name = input("Enter buyer's last name: ")
     plate = input("Enter the plate number: ")
 
+    #Retrieving first name of current owner of car
     c.execute("SELECT R.fname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
-    cf_name = fetchone()
-    c.execute("SELECT R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
-    cl_name = fetchone()
+    cf_name = c.fetchone()
 
+    #Retrieving last name of current owner of car
+    c.execute("SELECT R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
+    cl_name = c.fetchone()
+
+    #Check if current owner's name is the same as seller's name
     if cf_name != sf_name or cl_name != sl_name:
         raise AssertionError("You are not the current owner of the car! Dialing 911...")
 
+    #Update the expiry date of the current owner's car registration to current date
     current_date = datetime.date.today()
     c.execute('''UPDATE registrations SET expiry=? WHERE registrations.fname=? AND registrations.lname=?;''', (current_date, cf_name, cl_name))
 
+    #Select the most recent registration number
     c.execute("SELECT regno FROM registrations ORDER BY regno DESC")
-    new_regno = fetchone()
+    new_regno = c.fetchone()
+
+    #Insert new owner's information
     new_reg = (new_regno+1, current_date, plate, vin, bf_name, bl_name)
     c.execute("INSERT INTO registrations () VALUES (?,?, DATE('now', +1 year),?,?,?,?);", new_reg)
 
@@ -354,21 +362,28 @@ def a5(c, connection):
 
     tno = input("Enter ticket number: ")
 
+    #Ticket number may only contain numbers
     try:
         int(tno)
     except ValueError as error:
         print(error)
 
+    #Retrieve fine amount from ticket issued
     c.execute("SELECT fine FROM tickets, payments WHERE tickets.tno = payments.tno AND tno=?;", (tno))
-    fine = fetchone()
-    pdate = datetime.date.today()
-    amount = input("Enter ticket number: ")
-    payment = (tno, pdate, amount)
-    c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
+    fine = c.fetchone()
 
+    #Check if ticket is valid
     if (len(fine) == 0):
         raise AssertionError("You must enter a valid ticket number.")
 
+    pdate = datetime.date.today()
+    amount = input("Enter ticket number: ")
+
+    #Insert new information of amount paid
+    payment = (tno, pdate, amount)
+    c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
+
+    #If the full amount is not paid off, user can choose to pay in lump payments
     while ((fine - amount) != 0):
         try:
             tno = input("Enter ticket number: ")
@@ -384,36 +399,47 @@ def a6(c, connection):
 
     fname = input("Enter your first name: ")
     lname = input("Enter your last name: ")
-    option = input("Press 't' if you would like to see your tickets ordered from latest to oldest")
-
-    if lower.option() == "t":
-        c.execute("SELECT tickets.tno FROM tickets, registrations WHERE tickets.fname = registrations.fname AND tickets.lname = registrations.lname ORDER BY tno DESC")
-
-    c.execute("SELECT COUNT(T.tno) FROM tickets, registrations WHERE tickets.fname = registrations.fname AND tickets.lname = registrations.lname")
+    vin = input("Enter VIN of car you would like to see information: ")
+    
+    #Retrieves number of tickets user has
+    c.execute("SELECT COUNT(T.tno) FROM tickets T, registrations R WHERE T.fname = R.fname AND T.lname = R.lname AND fname = ? AND lname = ?", (fname, lname))
     num_tkts = c.fetchone()
-    c.execute("SELECT COUNT(*) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname")
+
+    #Retrieves number of demerit notices user has
+    c.execute("SELECT COUNT(D.desc) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ?", (fname, lname))
     num_dem = c.fetchone()
-    c.execute("SELECT D.SUM(points) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname AND DATE('')")
+
+    #Retrieves sum of demerit points in the part 2 years
+    c.execute("SELECT SUM(D.points) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ? AND DATE('now', '-2 years')", (fname, lname))
     pts_2 = c.fetchone()
-    c.execute("SELECT D.SUM(points) FROM demeritNotices D, registrations WHERE D.fname = registrations.fname AND D.lname = registrations.lname AND DATE('')")
+
+    #Retrieves sum of demerit points during lifetime
+    c.execute("SELECT SUM(D.points) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ? AND DATE('')", (fname, lname))
     pts_life = c.fetchone()
 
+    print("#Tickets: ", (num_tkts))
+    print("#DemeritNotices: ", (num_dem))
+    print("Total Demerit Pts. (2Years): ", (pts_2))
+    print("Total Demerit Pts. (Life): ", (pts_life))
 
-#Get a driver abstract.The user should be able to enter a first name and a last name and get a driver abstract, 
-#which includes the number of tickets, the number of demerit notices, the total number of demerit points received both within 
-#the past two years and within the lifetime. The user should be given the option to see the tickets ordered from the latest to 
-#the oldest. For each ticket, you will report the ticket number, the violation date, the violation description, the fine, the 
-#registration number and the make and model of the car for which the ticket is issued. If there are more than 5 tickets, at most 5 
-#tickets will be shown at a time, and the user can select to see more.
+    #Ordering tickets from latest -> oldest
+    option = input("Press 't' if you would like to see your tickets ordered from latest to oldest")
+    if option.lower() == "t":
+        c.execute("SELECT T.*, V.make, V.model FROM tickets T, registrations R, vehicles V WHERE T.fname = R.fname AND T.lname = R.lname AND R.vin = V.vin AND fname = ? AND lname = ? AND vin = ? ORDER BY tno DESC", (fname, lname, vin))
+        all_tkts = c.fetchall()
+    
+    #Check to see if there are more than 5 tickets
+    if len(all_tkts) > 5:
+        c.execute("SELECT T.*, V.make, V.model FROM tickets T, registrations R, vehicles V WHERE T.fname = R.fname AND T.lname = R.lname AND R.vin = V.vin AND fname = ? AND lname = ? AND vin = ? ORDER BY tno DESC LIMIT 5", (fname, lname, vin))
+        all_tkts = c.fetchall()
 
-#users(uid, pwd, utype, fname, lname, city)
-
-#persons(fname, lname, bdate, bplace, address, phone)
-#births(regno, fname, lname, regdate, regplace, gender, f_fname, f_lname, m_fname, m_lname)
-#marriages (regno, regdate, regplace, p1_fname, p1_lname, p2_fname, p2_lname)
-#vehicles(vin,make,model,year,color)
-#registrations(regno, regdate, expiry, plate, vin, fname, lname)
-#tickets(tno,regno,fine,violation,vdate)
-#demeritNotices(ddate, fname, lname, points, desc)
-#payments(tno, pdate, amount) 
-#users(uid, pwd, utype, fname, lname, city)
+    #Printing information of tickets
+    for ticket in all_tkts:
+        tno = ticket[0]
+        vdate = ticket[4]
+        violation = ticket[3]
+        fine = ticket[2]
+        regno = ticket[1]
+        make = ticket[5]
+        model = ticket[6]
+        print("| %d | %Y%d%d | %s | %f | %d | %s | %s |\n", (tno, vdate, violation, fine, regno, make, model))
