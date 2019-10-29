@@ -20,6 +20,8 @@ def getName(prompt, length):
     while True:
         try:
             name = input(prompt)
+            if name.lower() == "quit":
+                break
             assertAlpha(name)
             assertLength(name, length)
         except AssertionError as error:
@@ -33,6 +35,8 @@ def getDate(prompt, cur_date, allowNull):
     while True:
         try:
             date = input(prompt)
+            if date.lower() == "quit":
+                break
             if allowNull and len(date) == 0:
                 date = None
             else:
@@ -50,6 +54,8 @@ def getBPlace(prompt, length, allowNull):
     while True:
         try:
             bplace = input(prompt)
+            if bplace.lower() == "quit":
+                break
             if allowNull and len(bplace) == 0:
                 bplace = None
             else:
@@ -64,6 +70,8 @@ def getAddress(prompt, length, allowNull):
     while True:
         try:
             address = input(prompt)
+            if address.lower() == "quit":
+                break
             if allowNull and len(address) == 0:
                 address = None
             else:
@@ -78,6 +86,8 @@ def getPhone(prompt, length, allowNull):
     while True:
         try:
             phone = input(prompt)
+            if phone.lower() == "quit":
+                break
             if allowNull and len(phone) == 0:
                 phone = None
             else:
@@ -125,18 +135,26 @@ def agent_menu(user, c, connection):
             #a6(c, connection)
         else:
             print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
+        clear_screen()
 
 def a1(c, connection, user):
     cur_date = datetime.date.today()
     
     # get all user input
     print('Please provide the following information for the birth: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
     fname = getName('First name: ', 12)
+    if fname.lower() == "quit":
+        return
     lname = getName('Last name: ', 12)
+    if lname.lower() == "quit":
+        return
 
     while True:
         try:
             gender = input('Gender (M or F): ')
+            if gender.lower() == "quit":
+                return
             if len(gender) != 1:
                 raise AssertionError('Must be 1 character')
             assertAlpha(gender)
@@ -150,13 +168,23 @@ def a1(c, connection, user):
             break
 
     bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 0)
+    if bdate.lower() == "quit":
+        return
     bplace = getBPlace('Birth Place: ', 20, 0)
-            
+    if bplace.lower() == "quit":
+        return           
     f_fname = getName('Father\'s first name: ', 12)
+    if f_fname.lower() == "quit":
+        return
     f_lname = getName('Father\'s last name: ', 12)
+    if f_lname.lower() == "quit":
+        return
     m_fname = getName('Mother\'s first name: ', 12)
+    if m_fname.lower() == "quit":
+        return
     m_lname = getName('Mother\'s last name: ', 12)
-
+    if m_lname.lower() == "quit":
+        return
     # make unique regno
     c.execute('SELECT regno FROM births;')
     temp = c.fetchall()
@@ -175,11 +203,19 @@ def a1(c, connection, user):
     # prompt user for mother's info
     if mother == None:
         print('Please provide the following information about the mother: ')
-        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        print('If you do not want to provide a certain value, hit enter to skip that value')
         m_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        if m_bdate == "quit":
+            return
         m_bplace = getBPlace('Birth place: ', 20, 1)
+        if m_bplace == "quit":
+            return
         address = getAddress('Address: ', 30, 1)
+        if address == "quit":
+            return
         phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        if phone == "quit":
+            return
         # insert her into persons
         c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (m_fname, m_lname, m_bdate, m_bplace, address, phone))
         connection.commit()
@@ -197,11 +233,19 @@ def a1(c, connection, user):
 
     if father == None:
         print('Please provide the following information about the father: ')
-        print('If you do not want to provide a certain value, just hit enter to skip that value')
+        print('If you do not want to provide a certain value, hit enter to skip that value')
         f_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        if f_bdate == "quit":
+            return
         f_bplace = getBPlace('Birth place: ', 20, 1)
+        if f_bplace == "quit":
+            return
         f_address = getAddress('Address: ', 30, 1)
+        if f_address == "quit":
+            return
         f_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        if f_phone == "quit":
+            return
         # insert him into persons
         c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (f_fname, f_lname, f_bdate, f_bplace, f_address, f_phone))
         connection.commit()
@@ -217,18 +261,26 @@ def a1(c, connection, user):
     
     print('Birth successfully registered.')
     time.sleep(2)
-    clear_screen()
     
 def a2(c, connection, user):
     cur_date = datetime.date.today()
 
     # get partner names
     print('Please provide the following information for the marriage: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
     p1_fname = getName('Partner 1\'s first name: ', 12)
+    if p1_fname == "quit":
+        return
     p1_lname = getName('Partner 1\'s last name: ', 12)    
+    if p1_lname == "quit":
+        return
     p2_fname = getName('Partner 2\'s first name: ', 12)
+    if p2_fname == "quit":
+        return
     p2_lname = getName('Partner 2\'s last name: ', 12)
-    
+    if p2_lname == "quit":
+        return   
+
     # check if partner 1 is in db
     c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':p1_fname, 'lname':p1_lname})
     partner1 = c.fetchone()
@@ -238,9 +290,17 @@ def a2(c, connection, user):
         print('Please provide the following information about %s: ' % (p1_fname+' '+p1_lname))
         print('If you do not want to provide a certain value, just hit enter to skip that value')
         p1_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        if p1_bdate == "quit":
+            return
         p1_bplace = getBPlace('Birth place: ', 20, 1)
+        if p1_bplace == "quit":
+            return
         p1_address = getAddress('Address: ', 30, 1)
+        if p1_address == "quit":
+            return
         p1_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        if p1_phone == "quit":
+            return
         # insert partner 1 into persons
         c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (p1_fname, p1_lname, p1_bdate, p1_bplace, p1_address, p1_phone))
         connection.commit()
@@ -257,9 +317,17 @@ def a2(c, connection, user):
         print('Please provide the following information about %s: ' % (p2_fname+' '+p2_lname))
         print('If you do not want to provide a certain value, just hit enter to skip that value')
         p2_bdate = getDate('Birth date (YYYY-MM-DD): ', cur_date, 1)
+        if p2_bdate == "quit":
+            return
         p2_bplace = getBPlace('Birth place: ', 20, 1)
+        if p2_bplace == "quit":
+            return
         p2_address = getAddress('Address: ', 30, 1)
+        if p2_address == "quit":
+            return
         p2_phone = getPhone('Phone number (123-456-7890): ', 12, 1)
+        if p2_phone == "quit":
+            return
         # insert partner 2 into persons
         c.execute('INSERT INTO persons (fname, lname, bdate, bplace, address, phone) VALUES (?,?,?,?,?,?);', (p2_fname, p2_lname, p2_bdate, p2_bplace, p2_address, p2_phone))
         connection.commit()
@@ -285,45 +353,46 @@ def a2(c, connection, user):
 
     print('Marriage successfully registered.')
     time.sleep(2)
-    clear_screen()
     
 def a3(c, connection, user):
+    print('Please provide the following information for the vehicle registration renewal: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
     cur_date = datetime.date.today()
     while True:
         try:
-            num = input('Please enter the registration number to renew: ')
+            num = input('Registration number: ')
+            if num == "quit":
+                return
             # check input
             num = int(num)
         except ValueError:
             print('Must enter a number')
         else:
-            break
-    # get regno from db
-    c.execute('SELECT * FROM registrations WHERE regno = :num;', {'num':num})
-    registration = c.fetchone()
+           # break
+           # get regno from db
+            c.execute('SELECT * FROM registrations WHERE regno = :num;', {'num':num})
+            registration = c.fetchone()
     
-    # if regno is not in system
-    if registration == None:
-        print('That registration number is not in our system.\nReturning to menu screen.')
-        time.sleep(2)
-        clear_screen()
-        
-    # regno in system
+            # if regno is not in system
+            if registration == None:
+                print('That registration number is not in our system. Please try again.')
+            # regno in system
+            else:
+                break
+
+    old_expiry = datetime.datetime.strptime(registration[2], '%Y-%m-%d').date()
+    # set new expiry to one year from now
+    if old_expiry <= cur_date:
+        new_expiry = cur_date.replace(year = cur_date.year + 1)
+        c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
+        connection.commit()
+    # set new expiry to one year from current expiry
     else:
-        old_expiry = datetime.datetime.strptime(registration[2], '%Y-%m-%d').date()
-        # set new expiry to one year from now
-        if old_expiry <= cur_date:
-            new_expiry = cur_date.replace(year = cur_date.year + 1)
-            c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
-            connection.commit()
-        # set new expiry to one year from current expiry
-        else:
-            new_expiry = old_expiry.replace(year = old_expiry.year + 1)
-            c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
-            connection.commit()            
-        print('Registration successfully renewed. New expiry is', new_expiry)
-        time.sleep(2)
-        clear_screen()        
+        new_expiry = old_expiry.replace(year = old_expiry.year + 1)
+        c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
+        connection.commit()            
+    print('Registration successfully renewed. New expiry is', new_expiry)
+    time.sleep(2)
 
 def a4(c, connection):
 
