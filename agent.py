@@ -12,13 +12,13 @@ def clear_screen():
 # raises an assertion if value is not alphabetical
 def assertAlpha(value):
     if not value.isalpha():
-        raise AssertionError('Can only contain alphabetical characters')
+        raise AssertionError('*** CAN ONLY BE ALPHABETICAL CHARACTERS ***')
 
 # raises an assertion if the length of value is not within the
 # length bounds of its corresponding value in the database
 def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
-        raise AssertionError('Must be between 1 and %d characters' % (length))
+        raise AssertionError('*** MUST BE BETWEEN 1 AND %d CHARACTERS ***' % (length))
 
 # prompts for a name and returns it
 def getName(prompt, length):
@@ -49,9 +49,9 @@ def getDate(prompt, cur_date, allowNull):
                 if datetime.datetime.strptime(date, '%Y-%m-%d').date() > cur_date:
                     raise IndexError()
         except ValueError:
-            print('Invalid Date Format')
+            print('*** INVALID DATE FORMAT ***')
         except IndexError:
-            print('Date cannot be in the future')
+            print('*** CANNOT BE IN THE FUTURE ***')
         else:
             break
     return date
@@ -101,7 +101,7 @@ def getPhone(prompt, length, allowNull):
                 phone = None
             else:
                 if len(phone) != 12:
-                    raise AssertionError('Must be 12 characters')
+                    raise AssertionError('*** MUST BE 12 CHARACTERS ***')
         except AssertionError as error:
             print(error)
         else:
@@ -168,12 +168,12 @@ def a1(c, connection, user):
             if gender.lower() == "quit":
                 return
             if len(gender) != 1:
-                raise AssertionError('Must be 1 character')
+                raise AssertionError('*** MUST BE 1 CHARACTER ***')
             assertAlpha(gender)
             if gender.lower() == 'm' or gender.lower() == 'f':
                 break
             else:
-                raise AssertionError('Gender must be M or F')
+                raise AssertionError('*** GENDER MUST BE M OR F ***')
         except AssertionError as error:
             print(error)
         else:
@@ -380,7 +380,7 @@ def a3(c, connection, user):
             # check input
             num = int(num)
         except ValueError:
-            print('Must enter a number')
+            print('*** MUST BE AN INTEGER ***')
         else:
            # get regno from db
             c.execute('SELECT * FROM registrations WHERE regno = :num;', {'num':num})
@@ -388,7 +388,7 @@ def a3(c, connection, user):
     
             # if regno is not in system
             if registration == None:
-                print('That registration number is not in our system. Please try again.')
+                print('*** That registration number is not in our system. Please try again. ***')
             # regno in system
             else:
                 break
@@ -449,6 +449,7 @@ def a4(c, connection):
     new_reg = (new_regno, current_date, new_expiry, plate, vin, bf_name, bl_name)
     c.execute("INSERT INTO registrations (regno, regdate, expiry, plate, vin, fname, lname) VALUES (?,?,?,?,?,?,?);", new_reg)
     connection.commit()
+
 def a5(c, connection):
 
     tno = input("Enter ticket number: ")
