@@ -16,8 +16,6 @@ def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('Error: Must be between 1 and %d characters' % (length))
 
-<<<<<<< HEAD
-=======
 def getName(prompt, length):
     while True:
         try:
@@ -92,7 +90,6 @@ def getPhone(prompt, length):
     return phone
    
 
->>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
 def agent_menu(user, c, connection):
     logout = False
     clear_screen()
@@ -181,7 +178,6 @@ def a1(c, connection):
         address = mother[4]
         phone = mother[5]
 
-<<<<<<< HEAD
 def a4(c, connection):
     
 
@@ -227,11 +223,6 @@ tickets(tno,regno,fine,violation,vdate)
 demeritNotices(ddate, fname, lname, points, desc)
 payments(tno, pdate, amount) 
 users(uid, pwd, utype, fname, lname, city)
-=======
-    
-    c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':m_fname, 'lname':m_lname})
-    mother = c.fetchall()
->>>>>>> 2aa90075319c33ab35e87a16e19f822c4733a52c
 
 
 
