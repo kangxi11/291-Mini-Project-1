@@ -408,38 +408,47 @@ def a3(c, connection, user):
     time.sleep(2)
 
 def a4(c, connection):
+    
+    while True:
+        try:
+            vin = input("Enter VIN: ")
+            c.execute("SELECT * FROM registrations WHERE vin = ? COLLATE NOCASE;", (vin,))
+            if len(c.fetchall()) == 0:
+                raise AssertionError("*** VIN DOES NOT EXIST ***")
+        except AssertionError as error:
+            print(error)
+        else:
+            break
 
-    vin = input("Enter VIN: ")
-    sf_name = input("Enter seller's first name: ")
-    sl_name = input("Enter seller's last name: ")
+    sf_name = input("Enter current owner's first name: ")
+    sl_name = input("Enter current owner's last name: ")
     bf_name = input("Enter buyer's first name: ")
     bl_name = input("Enter buyer's last name: ")
     plate = input("Enter the plate number: ")
 
     #Retrieving first name of current owner of car
-    c.execute("SELECT R.fname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
-    cf_name = c.fetchone()
-
-    #Retrieving last name of current owner of car
-    c.execute("SELECT R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND vin=? ORDER BY regdate DESC LIMIT 1;", (vin))
-    cl_name = c.fetchone()
+    c.execute("SELECT R.regno, R.fname, R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND R.vin=? COLLATE NOCASE ORDER BY regdate DESC LIMIT 1;", (vin,))
+    current_owner = c.fetchone()
 
     #Check if current owner's name is the same as seller's name
-    if cf_name != sf_name or cl_name != sl_name:
-        raise AssertionError("You are not the current owner of the car! Dialing 911...")
+    if current_owner[1] != sf_name or current_owner[2] != sl_name:
+        print("You are not the current owner of the car! Dialing 911...")
+        garbage = input('Press Enter to Continue')
+        return
 
     #Update the expiry date of the current owner's car registration to current date
     current_date = datetime.date.today()
-    c.execute('''UPDATE registrations SET expiry=? WHERE registrations.fname=? AND registrations.lname=?;''', (current_date, cf_name, cl_name))
+    c.execute('''UPDATE registrations SET expiry=? WHERE regno = ?;''', (current_date, current_owner[0]))
 
     #Select the most recent registration number
     c.execute("SELECT regno FROM registrations ORDER BY regno DESC")
-    new_regno = c.fetchone()
+    new_regno = c.fetchone()[0] + 1
 
     #Insert new owner's information
-    new_reg = (new_regno+1, current_date, plate, vin, bf_name, bl_name)
-    c.execute("INSERT INTO registrations () VALUES (?,?, DATE('now', +1 year),?,?,?,?);", new_reg)
-
+    new_expiry = current_date.replace(year = current_date.year + 1)
+    new_reg = (new_regno, current_date, new_expiry, plate, vin, bf_name, bl_name)
+    c.execute("INSERT INTO registrations (regno, regdate, expiry, plate, vin, fname, lname) VALUES (?,?,?,?,?,?,?);", new_reg)
+    connection.commit()
 def a5(c, connection):
 
     tno = input("Enter ticket number: ")
