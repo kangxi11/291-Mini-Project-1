@@ -142,8 +142,8 @@ def agent_menu(user, c, connection):
             a4(c, connection)
         elif choice == '5':
             a5(c, connection)
-        #elif choice == '6':
-            #a6(c, connection)
+        elif choice == '6':
+            a6(c, connection)
         else:
             print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
         clear_screen()
@@ -534,49 +534,58 @@ def a5(c, connection):
 
 def a6(c, connection):
 
-    fname = input("Enter your first name: ")
-    lname = input("Enter your last name: ")
-    vin = input("Enter VIN of car you would like to see information: ")
+    clear_screen()
+
+    fname = getName('First name: ', 12)
+    lname = getName('Last name: ', 12)
     
     #Retrieves number of tickets user has
-    c.execute("SELECT COUNT(T.tno) FROM tickets T, registrations R WHERE T.fname = R.fname AND T.lname = R.lname AND fname = ? AND lname = ?", (fname, lname))
-    num_tkts = c.fetchone()
+    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? AND R.lname = ? AND R.regno = T.regno;", (fname, lname))
+    num_tkts = c.fetchone()[0]
 
     #Retrieves number of demerit notices user has
-    c.execute("SELECT COUNT(D.desc) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ?", (fname, lname))
-    num_dem = c.fetchone()
+    c.execute("SELECT COUNT(*) FROM demeritNotices WHERE fname = ? AND lname = ?;", (fname, lname))
+    num_dem = c.fetchone()[0]
 
     #Retrieves sum of demerit points in the part 2 years
-    c.execute("SELECT SUM(D.points) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ? AND DATE('now', '-2 years')", (fname, lname))
-    pts_2 = c.fetchone()
+    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? AND lname = ? AND ddate >= DATE('now', '-2 years');", (fname, lname))
+    pts_2 = c.fetchone()[0]
 
     #Retrieves sum of demerit points during lifetime
-    c.execute("SELECT SUM(D.points) FROM demeritNotices D, registrations R WHERE D.fname = R.fname AND D.lname = R.lname AND fname = ? AND lname = ? AND DATE('')", (fname, lname))
-    pts_life = c.fetchone()
+    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? AND lname = ?;", (fname, lname))
+    pts_life = c.fetchone()[0]
 
-    print("#Tickets: ", (num_tkts))
-    print("#DemeritNotices: ", (num_dem))
-    print("Total Demerit Pts. (2Years): ", (pts_2))
-    print("Total Demerit Pts. (Life): ", (pts_life))
+    print("\nDriver Abstract:\n")
+    print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , '# of Tickets'.ljust(12, ' ') , ' ' , 'Demerit Count'.ljust(12, ' ') , ' ', 'Dem. Points 2 Years'.ljust(12, ' '), ' ' , 
+                'Dem. Points Lifetime'.ljust(12, ' ') + '\n')
+    print(fname.ljust(12, ' ') , '|' , lname.ljust(12, ' ') , '|' , str(num_tkts).ljust(12, ' ') , '|' , str(num_dem).ljust(13, ' ') , '|', str(pts_2).ljust(19, ' ')
+            , '|' , str(pts_life).ljust(12, ' ') + '\n')
 
     #Ordering tickets from latest -> oldest
-    option = input("Press 't' if you would like to see your tickets ordered from latest to oldest")
+    option = input("Press 't' if you would like to see your tickets ordered from latest to oldest: ")
     if option.lower() == "t":
-        c.execute("SELECT T.*, V.make, V.model FROM tickets T, registrations R, vehicles V WHERE T.fname = R.fname AND T.lname = R.lname AND R.vin = V.vin AND fname = ? AND lname = ? AND vin = ? ORDER BY tno DESC", (fname, lname, vin))
+        c.execute('''SELECT T.tno, T.vdate, T.violation, T.fine, T.regno, V.make, V.model 
+                    FROM tickets T, registrations R, vehicles V 
+                    WHERE T.regno = R.regno AND R.vin = V.vin AND R.fname = ? AND R.lname = ? ORDER BY T.vdate DESC;''', (fname, lname))
         all_tkts = c.fetchall()
     
-    #Check to see if there are more than 5 tickets
-    if len(all_tkts) > 5:
-        c.execute("SELECT T.*, V.make, V.model FROM tickets T, registrations R, vehicles V WHERE T.fname = R.fname AND T.lname = R.lname AND R.vin = V.vin AND fname = ? AND lname = ? AND vin = ? ORDER BY tno DESC LIMIT 5", (fname, lname, vin))
-        all_tkts = c.fetchall()
+        i = 0
+        j = 0
+        while (i < len(all_tkts)):
+            j = 0
+            print('\n\n\nTicket Num'.ljust(12, ' ') , ' ' , 'Vio. Date'.ljust(12, ' ') , ' ' , 'Vio. Descrip'.ljust(25, ' ') , ' ' , 'Fine'.ljust(12, ' ') , ' ' , 'Reg. Num.'.ljust(12, ' ') , ' ', 'Make'.ljust(12, ' '), ' ' , 
+                'Model'.ljust(12, ' ') + '\n')
+            while (j < 5 and i < len(all_tkts)):
+                print(str(all_tkts[i][0]).ljust(12, ' ') , '|' , all_tkts[i][1].ljust(12, ' ') , '|' , '%.25s'%(all_tkts[i][2].ljust(25, ' ')) , '|' , str(all_tkts[i][3]).ljust(12, ' ') , '|', str(all_tkts[i][4]).ljust(12, ' ')
+                        , '|' , all_tkts[i][5].ljust(12, ' '), '|' , all_tkts[i][6].ljust(12, ' '))
+                j = j+1
+                i = i+1
+            
+            if (i < len(all_tkts)):
+                garbage = input("Press ''t'' to see more tickets: ")
 
-    #Printing information of tickets
-    for ticket in all_tkts:
-        tno = ticket[0]
-        vdate = ticket[4]
-        violation = ticket[3]
-        fine = ticket[2]
-        regno = ticket[1]
-        make = ticket[5]
-        model = ticket[6]
-        print("| %d | %Y%d%d | %s | %f | %d | %s | %s |\n", (tno, vdate, violation, fine, regno, make, model))
+                if garbage.lower() != 't':
+                    garbage = input('Press Enter to Continue to the home screen')
+                    return
+    garbage = input('Press Enter to Continue')
+

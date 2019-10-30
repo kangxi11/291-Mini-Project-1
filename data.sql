@@ -84,9 +84,30 @@ insert into tickets values (407,305,60,'speeding','2019-04-20');
 insert into tickets values (414,314,12,'passed in red light of calgary','2019-05-20');
 insert into tickets values (415,315,14,'speeding','2019-06-20');
 insert into tickets values (416,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (417,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (418,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (419,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (420,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (421,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (422,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (423,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (424,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (430,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (431,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (432,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (433,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (434,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (435,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (436,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (437,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (438,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
+insert into tickets values (439,315,15,'dasin rEd lIght VIOLATION','2019-07-20');
 
 
+insert into demeritNotices values ('1964-09-20', 'Walt', 'Disney', 2, 'Speeding');
 insert into demeritNotices values ('1964-08-20', 'Walt', 'Disney', 2, 'Speeding');
+insert into demeritNotices values ('2019-01-20', 'Walt', 'Disney', 4, 'Speeding');
+insert into demeritNotices values ('2019-08-20', 'Walt', 'Disney', 3, 'Speeding');
 
 
 insert into payments values (400, '2019-09-21', 5);
