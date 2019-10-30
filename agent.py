@@ -432,7 +432,14 @@ def a4(c, connection):
 
     #Check if current owner's name is the same as seller's name
     if current_owner[1] != sf_name or current_owner[2] != sl_name:
-        print("You are not the current owner of the car! Dialing 911...")
+        print("*** You are not the current owner of the car! Dialing 911... ***")
+        garbage = input('Press Enter to Continue')
+        return
+    
+    # Check if the new owner is in the persons table
+    c.execute('SELECT * FROM persons WHERE fname = ? and lname = ?;', (bf_name, bl_name))
+    if len(c.fetchall()) == 0:
+        print("*** The new owner does not exist in our database ***")
         garbage = input('Press Enter to Continue')
         return
 
@@ -452,40 +459,73 @@ def a4(c, connection):
 
 def a5(c, connection):
 
-    tno = input("Enter ticket number: ")
-
-    #Ticket number may only contain numbers
-    try:
-        int(tno)
-    except ValueError as error:
-        print(error)
+    while True:
+            try:
+                tno = input("Enter ticket number: ")
+                int(tno)
+                c.execute("SELECT * FROM tickets WHERE tno = ?;", (tno,))
+                if len(c.fetchall()) == 0:
+                    raise AssertionError("*** TICKET NUMBER DOES NOT EXIST ***")
+            except AssertionError as error:
+                print(error)
+            except ValueError:
+                #Ticket number may only contain numbers
+                print("*** TICKET NUMBER CAN ONLY BE INTEGERS ***")
+            else:
+                break
 
     #Retrieve fine amount from ticket issued
-    c.execute("SELECT fine FROM tickets, payments WHERE tickets.tno = payments.tno AND tno=?;", (tno))
-    fine = c.fetchone()
+    c.execute("SELECT amount FROM payments WHERE tno=?;", (tno,))
+    temp = c.fetchall()
+    fine_total = 0
+    for x in temp:
+        fine_total = fine_total + int(x[0])
+    
+    c.execute("SELECT fine FROM tickets WHERE tno = ?;",(tno,))
+    fine_remaining = c.fetchone()[0] - fine_total
 
-    #Check if ticket is valid
-    if (len(fine) == 0):
-        raise AssertionError("You must enter a valid ticket number.")
-
-    pdate = datetime.date.today()
-    amount = input("Enter ticket number: ")
-
-    #Insert new information of amount paid
-    payment = (tno, pdate, amount)
-    c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
-
-    #If the full amount is not paid off, user can choose to pay in lump payments
-    while ((fine - amount) != 0):
+    while True:
         try:
-            tno = input("Enter ticket number: ")
-            amount = input("Enter amount: ")
-            pdate = datetime.date.today()
-            payment = (tno, pdate, amount)
-            c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
+            amount = input("Enter a payment amount: ")
+            amount = int(amount)
 
+            if amount <= 0:
+                raise AssertionError("*** MUST BE GREATER THAN 0 ***")
+            if amount > fine_remaining:
+                raise AssertionError("*** PAYING MORE THAN FINE REMAINING ($%d) ***" % (fine_remaining))
+        
+        except ValueError:
+            print("*** ONLY INTEGERS ALLOWED ***")
         except AssertionError as error:
             print(error)
+        else:
+            break
+
+    #Insert new information of amount paid
+    pdate = datetime.date.today()
+    payment = (tno, pdate, amount)
+    try:
+        c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
+        connection.commit()
+    except sqlite3.IntegrityError:
+        print("*** ALREADY PAID TODAY. PAYMENT REJECTED ***")
+        garbage = input('Press Enter to Continue')
+    else:
+        garbage = input('Press Enter to Continue')
+
+        
+
+    #If the full amount is not paid off, user can choose to pay in lump payments
+    #while ((fine - amount) != 0):
+    #    try:
+    #        tno = input("Enter ticket number: ")
+    #        amount = input("Enter amount: ")
+     #         pdate = datetime.date.today()
+     #       payment = (tno, pdate, amount)
+     #       c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
+    #
+     #   except AssertionError as error:
+    #        print(error)
 
 def a6(c, connection):
 
