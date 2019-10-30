@@ -412,6 +412,9 @@ def a4(c, connection):
     while True:
         try:
             vin = input("Enter VIN: ")
+            if vin.lower() == "quit":
+                return
+
             c.execute("SELECT * FROM registrations WHERE vin = ? COLLATE NOCASE;", (vin,))
             if len(c.fetchall()) == 0:
                 raise AssertionError("*** VIN DOES NOT EXIST ***")
@@ -421,10 +424,21 @@ def a4(c, connection):
             break
 
     sf_name = input("Enter current owner's first name: ")
+    if sf_name.lower() == "quit":
+        return
+
     sl_name = input("Enter current owner's last name: ")
+    if sl_name.lower() == "quit":
+        return
     bf_name = input("Enter buyer's first name: ")
+    if bf_name.lower() == "quit":
+        return
     bl_name = input("Enter buyer's last name: ")
+    if bl_name.lower() == "quit":
+        return
     plate = input("Enter the plate number: ")
+    if plate.lower() == "quit":
+        return
 
     #Retrieving first name of current owner of car
     c.execute("SELECT R.regno, R.fname, R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND R.vin=? COLLATE NOCASE ORDER BY regdate DESC LIMIT 1;", (vin,))
@@ -462,6 +476,8 @@ def a5(c, connection):
     while True:
             try:
                 tno = input("Enter ticket number: ")
+                if tno.lower() == "quit":
+                    return
                 int(tno)
                 c.execute("SELECT * FROM tickets WHERE tno = ?;", (tno,))
                 if len(c.fetchall()) == 0:
@@ -492,6 +508,8 @@ def a5(c, connection):
     while True:
         try:
             amount = input("Enter a payment amount: ")
+            if amount.lower() == "quit":
+                return
             amount = int(amount)
 
             if amount <= 0:
@@ -537,7 +555,11 @@ def a6(c, connection):
     clear_screen()
 
     fname = getName('First name: ', 12)
+    if fname.lower() == "quit":
+        return
     lname = getName('Last name: ', 12)
+    if lname.lower() == "quit":
+        return
     
     #Retrieves number of tickets user has
     c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? AND R.lname = ? AND R.regno = T.regno;", (fname, lname))
@@ -563,6 +585,8 @@ def a6(c, connection):
 
     #Ordering tickets from latest -> oldest
     option = input("Press 't' if you would like to see your tickets ordered from latest to oldest: ")
+    if option.lower() == "quit":
+        return
     if option.lower() == "t":
         c.execute('''SELECT T.tno, T.vdate, T.violation, T.fine, T.regno, V.make, V.model 
                     FROM tickets T, registrations R, vehicles V 

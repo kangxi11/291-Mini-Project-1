@@ -37,6 +37,8 @@ def o1(c, connection):
     while True:
         try:
             uRegno = input('Registration Number: ')
+            if uRegno.lower() == "quit":
+                return
             c.execute ("SELECT * FROM registrations WHERE regno = ?;", (uRegno, ))
             reg = c.fetchall()
 
@@ -76,6 +78,8 @@ def o1(c, connection):
     while True:
         try:
             vdate = input('Violation Date (YYYY-MM-DD): ')
+            if vdate.lower() == "quit":
+                return
 
             if vdate == '':
                 vdate = time.strftime("%Y-%m-%d")
@@ -98,11 +102,15 @@ def o1(c, connection):
 
     # get a violation text
     violation = input('Violation Text: ')
+    if violation.lower() == "quit":
+        return
 
     # get a fine amount that is greater than 0 and an integer
     while True:
         try:
             fine = input('Fine Amount: ')
+            if fine.lower() == "quit":
+                return
             test = int(fine)
 
             if int(fine) <= 0:
@@ -131,8 +139,14 @@ def o2 (c, connection):
     while True:
         try:
             make = input('Make of car: ')
+            if make.lower() == "quit":
+                return
             model = input('Model of car: ')
+            if model.lower() == "quit":
+                return
             year = input('Year of car: ')
+            if year.lower() == "quit":
+                return
             
             if year != '':
                 test = int(year)
@@ -141,7 +155,11 @@ def o2 (c, connection):
                     raise AssertionError('*** YEAR MUST BE GREATER THAN 0 ***')
             
             color = input('Color of car: ')
+            if color.lower() == "quit":
+                return
             plate = input('Plate of car: ')
+            if plate.lower() == "quit":
+                return
 
             if make != '': # user did not input anything
                 make = 'v.make = \'' + make + '\' COLLATE NOCASE'
@@ -189,6 +207,8 @@ def o2 (c, connection):
                     print( (str(i+1)+'.').ljust(5, ' ') , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
 
                 choice = input('Choice: ')
+                if choice.lower() == "quit":
+                    return
 
                 if (int(choice) < 1) or (int(choice) > len(cars)):
                     raise AssertionError('*** CHOICE OUT OF RANGE ***')
