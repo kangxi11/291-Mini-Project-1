@@ -484,6 +484,11 @@ def a5(c, connection):
     c.execute("SELECT fine FROM tickets WHERE tno = ?;",(tno,))
     fine_remaining = c.fetchone()[0] - fine_total
 
+    if fine_remaining == 0:
+        print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
+        garbage = input('Press Enter to Continue')
+        return
+
     while True:
         try:
             amount = input("Enter a payment amount: ")
