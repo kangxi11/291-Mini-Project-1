@@ -4,18 +4,23 @@ import datetime
 import time
 from datetime import date
 
+# clears the screen
 def clear_screen():
     print('----------------------------------------------------------------------------------------------')
     print('\n\n\n\n')
 
+# raises an assertion if value is not alphabetical
 def assertAlpha(value):
     if not value.isalpha():
         raise AssertionError('Can only contain alphabetical characters')
 
+# raises an assertion if the length of value is not within the
+# length bounds of its corresponding value in the database
 def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('Must be between 1 and %d characters' % (length))
 
+# prompts for a name and returns it
 def getName(prompt, length):
     while True:
         try:
@@ -30,6 +35,7 @@ def getName(prompt, length):
             break
     return name
 
+# prompts for a date and returns it
 # allowNull is a bool, 1 if the date is allowed to be null, 0 otherwise
 def getDate(prompt, cur_date, allowNull):
     while True:
@@ -50,6 +56,7 @@ def getDate(prompt, cur_date, allowNull):
             break
     return date
 
+# prompts for a birth place and returns it
 def getBPlace(prompt, length, allowNull):
     while True:
         try:
@@ -66,6 +73,7 @@ def getBPlace(prompt, length, allowNull):
             break
     return bplace
 
+# prompts for an address and returns it
 def getAddress(prompt, length, allowNull):
     while True:
         try:
@@ -82,6 +90,7 @@ def getAddress(prompt, length, allowNull):
             break
     return address
 
+# prompts for a phone number and returns it
 def getPhone(prompt, length, allowNull):
     while True:
         try:
@@ -99,6 +108,8 @@ def getPhone(prompt, length, allowNull):
             break
     return phone  
 
+# the agent menu, showing the operations that agents can choose from
+# and allows them to logout or exit
 def agent_menu(user, c, connection):
     logout = False
     clear_screen()
@@ -137,6 +148,7 @@ def agent_menu(user, c, connection):
             print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
         clear_screen()
 
+# contains the functionality for option 1
 def a1(c, connection, user):
     cur_date = datetime.date.today()
     
@@ -261,7 +273,8 @@ def a1(c, connection, user):
     
     print('Birth successfully registered.')
     time.sleep(2)
-    
+   
+# contains the functionality for option 2
 def a2(c, connection, user):
     cur_date = datetime.date.today()
 
@@ -353,7 +366,8 @@ def a2(c, connection, user):
 
     print('Marriage successfully registered.')
     time.sleep(2)
-    
+
+# contains the functionality for option 3
 def a3(c, connection, user):
     print('Please provide the following information for the vehicle registration renewal: ')
     print('If you want to quit the operation, enter \"quit\" at any time')
@@ -368,7 +382,6 @@ def a3(c, connection, user):
         except ValueError:
             print('Must enter a number')
         else:
-           # break
            # get regno from db
             c.execute('SELECT * FROM registrations WHERE regno = :num;', {'num':num})
             registration = c.fetchone()
