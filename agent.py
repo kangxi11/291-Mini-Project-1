@@ -408,7 +408,9 @@ def a3(c, connection, user):
     time.sleep(2)
 
 def a4(c, connection):
-    
+    print('Please provide the following information to process a bill of sale: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
+
     while True:
         try:
             vin = input("Enter VIN: ")
@@ -472,6 +474,8 @@ def a4(c, connection):
     connection.commit()
 
 def a5(c, connection):
+    print('Please provide the following information to process a payment: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
 
     while True:
             try:
@@ -551,6 +555,8 @@ def a5(c, connection):
     #        print(error)
 
 def a6(c, connection):
+    print('Please provide the following information to get a driver abstract: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
 
     clear_screen()
 

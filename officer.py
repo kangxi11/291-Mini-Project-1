@@ -34,6 +34,10 @@ def officer_menu(user, c, connection):
             o2(c, connection)
 
 def o1(c, connection):
+
+    print('Please provide the following information to issue a ticket: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
+
     while True:
         try:
             uRegno = input('Registration Number: ')
@@ -135,7 +139,9 @@ def o1(c, connection):
 
 
 def o2 (c, connection):
-    
+    print('Please provide the following information to find a car owner: ')
+    print('If you want to quit the operation, enter \"quit\" at any time')
+  
     while True:
         try:
             make = input('Make of car: ')
