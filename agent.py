@@ -622,4 +622,3 @@ def a6(c, connection):
                     garbage = input('Press Enter to Continue to the home screen')
                     return
     garbage = input('Press Enter to Continue')
-
