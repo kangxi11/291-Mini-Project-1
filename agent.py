@@ -97,13 +97,25 @@ def getPhone(prompt, length, allowNull):
             phone = input(prompt)
             if phone.lower() == "quit":
                 break
+            
             if allowNull and len(phone) == 0:
                 phone = None
+            elif len(phone) != 12:
+                raise AssertionError('*** MUST BE 12 CHARACTERS ***')
             else:
-                if len(phone) != 12:
-                    raise AssertionError('*** MUST BE 12 CHARACTERS ***')
+                num_count = 0
+                if phone[3] != '-' and phone[7] != '-':
+                    raise AssertionError("*** INVALID FORMAT ***")
+                for num in phone:
+                    if num != '-':
+                        int(num)
+                        num_count += 1
+                if num_count != 10:
+                    raise AssertionError("*** MUST BE 10 INTEGERS LONG ***")
         except AssertionError as error:
             print(error)
+        except ValueError:
+            print("*** CAN ONLY BE - OR INTEGERS ***")
         else:
             break
     return phone  
@@ -507,12 +519,9 @@ def a5(c, connection):
                 break
 
     #Retrieve fine amount from ticket issued
-    c.execute("SELECT amount FROM payments WHERE tno=?;", (tno,))
-    temp = c.fetchall()
-    fine_total = 0
-    for x in temp:
-        fine_total = fine_total + int(x[0])
-    
+    c.execute("SELECT SUM(amount) FROM payments WHERE tno=?;", (tno,))
+    fine_total = c.fetchall()[0]
+
     c.execute("SELECT fine FROM tickets WHERE tno = ?;",(tno,))
     fine_remaining = c.fetchone()[0] - fine_total
 
@@ -551,20 +560,6 @@ def a5(c, connection):
         garbage = input('Press Enter to Continue')
     else:
         garbage = input('Press Enter to Continue')
-
-        
-
-    #If the full amount is not paid off, user can choose to pay in lump payments
-    #while ((fine - amount) != 0):
-    #    try:
-    #        tno = input("Enter ticket number: ")
-    #        amount = input("Enter amount: ")
-     #         pdate = datetime.date.today()
-     #       payment = (tno, pdate, amount)
-     #       c.execute("INSERT INTO payments (tno, pdate, amount) VALUES (?,?,?);", payment)
-    #
-     #   except AssertionError as error:
-    #        print(error)
 
 def a6(c, connection):
     print('Please provide the following information to get a driver abstract: ')
