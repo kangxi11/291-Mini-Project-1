@@ -521,18 +521,18 @@ def a5(c, connection):
     print("Original Fine: ", (fine_amount))
     
     #Calculate and display the remaining amount (Payment amount - fine)
-    c.execute("SELECT amount FROM payments WHERE tno = ?;", (tno,))
-    remaining = c.fetchone()
-    if type(remaining) == None:
-        remaining = fine_amount - 0
-        print("Remaining: ", (remaining))
-    elif type(remaining) != None:
-        remaining = fine_amount - c.fetchone()[0]
-        print("Remaining: ", (remaining))
-    elif remaining == 0:
-        print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
-        garbage = input('Press Enter to Continue')
-        return
+    #c.execute("SELECT amount FROM payments WHERE tno = ?;", (tno,))
+    #remaining = c.fetchone()
+    #if type(remaining) == None:
+    #    remaining = fine_amount - 0
+    #    print("Remaining: ", (remaining))
+    #elif type(remaining) != None:
+    #    remaining = fine_amount - c.fetchone()[0]
+    #    print("Remaining: ", (remaining))
+    #elif remaining == 0:
+    #    print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
+    #    garbage = input('Press Enter to Continue')
+    #    return
 
     while True:
         try:
