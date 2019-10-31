@@ -97,13 +97,25 @@ def getPhone(prompt, length, allowNull):
             phone = input(prompt)
             if phone.lower() == "quit":
                 break
+            
             if allowNull and len(phone) == 0:
                 phone = None
+            elif len(phone) != 12:
+                raise AssertionError('*** MUST BE 12 CHARACTERS ***')
             else:
-                if len(phone) != 12:
-                    raise AssertionError('*** MUST BE 12 CHARACTERS ***')
+                num_count = 0
+                if phone[3] != '-' and phone[7] != '-':
+                    raise AssertionError("*** INVALID FORMAT ***")
+                for num in phone:
+                    if num != '-':
+                        int(num)
+                        num_count += 1
+                if num_count != 10:
+                    raise AssertionError("*** MUST BE 10 INTEGERS LONG ***")
         except AssertionError as error:
             print(error)
+        except ValueError:
+            print("*** CAN ONLY BE - OR INTEGERS ***")
         else:
             break
     return phone  
