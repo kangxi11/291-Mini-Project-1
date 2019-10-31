@@ -450,17 +450,22 @@ def a4(c, connection):
     print(sf_name, sl_name, current_owner[1], current_owner[2])
 
     #Check if current owner's name is the same as seller's name
-    if current_owner[1] != sf_name or current_owner[2] != sl_name:
+    if current_owner[1].lower() != sf_name.lower() or current_owner[2].lower() != sl_name.lower():
         print("*** You are not the current owner of the car! Dialing 911... ***")
         garbage = input('Press Enter to Continue')
         return
     
     # Check if the new owner is in the persons table
-    c.execute('SELECT * FROM persons WHERE fname = ? and lname = ?;', (bf_name, bl_name))
+    c.execute('SELECT * FROM persons WHERE fname = ? COLLATE NOCASE and lname = ? COLLATE NOCASE;', (bf_name, bl_name))
     if len(c.fetchall()) == 0:
         print("*** The new owner does not exist in our database ***")
         garbage = input('Press Enter to Continue')
         return
+    else:
+        c.execute('SELECT fname, lname FROM persons WHERE fname = ? COLLATE NOCASE and lname = ? COLLATE NOCASE;', (bf_name, bl_name))
+        name = c.fetchone()
+        bf_name = name[0]
+        bl_name = name[1]
 
     #Update the expiry date of the current owner's car registration to current date
     current_date = datetime.date.today()
@@ -475,6 +480,10 @@ def a4(c, connection):
     new_reg = (new_regno, current_date, new_expiry, plate, vin, bf_name, bl_name)
     c.execute("INSERT INTO registrations (regno, regdate, expiry, plate, vin, fname, lname) VALUES (?,?,?,?,?,?,?);", new_reg)
     connection.commit()
+
+    print("Successfully Processed the Bill of Sale.")
+    garbage = input('Press Enter to Continue')
+
 
 def a5(c, connection):
     print('Please provide the following information to process a payment: ')
