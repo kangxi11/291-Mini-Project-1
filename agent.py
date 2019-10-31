@@ -426,7 +426,7 @@ def a4(c, connection):
         try:
             vin = input("Enter VIN: ")
             if vin.lower() == "quit":
-                return
+                returnpyth
 
             c.execute("SELECT * FROM registrations WHERE vin = ? COLLATE NOCASE;", (vin,))
             if len(c.fetchall()) == 0:
@@ -571,27 +571,38 @@ def a6(c, connection):
     if lname.lower() == "quit":
         return
     
-    #Retrieves number of tickets user has
-    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? AND R.lname = ? AND R.regno = T.regno;", (fname, lname))
-    num_tkts = c.fetchone()[0]
+    #Retrieves number of tickets user obtained within 2 years
+    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? COLLATE NOCASE AND R.lname = ? COLLATE NOCASE AND R.regno = T.regno AND regdate >= DATE('now', '-2 years');", (fname, lname))
+    two_tkts = c.fetchone()[0]
 
-    #Retrieves number of demerit notices user has
-    c.execute("SELECT COUNT(*) FROM demeritNotices WHERE fname = ? AND lname = ?;", (fname, lname))
-    num_dem = c.fetchone()[0]
+    #Retrieves number of tickets user obtained within life
+    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? COLLATE NOCASE AND R.lname = ? COLLATE NOCASE AND R.regno = T.regno;", (fname, lname))
+    life_tkts = c.fetchone()[0]
 
-    #Retrieves sum of demerit points in the part 2 years
-    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? AND lname = ? AND ddate >= DATE('now', '-2 years');", (fname, lname))
-    pts_2 = c.fetchone()[0]
+    #Retrieves number of demerit notices obtained within 2 years
+    c.execute("SELECT COUNT(*) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE AND ddate >= DATE('now', '-2 years');", (fname, lname))
+    two_dem = c.fetchone()[0]
 
-    #Retrieves sum of demerit points during lifetime
-    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? AND lname = ?;", (fname, lname))
-    pts_life = c.fetchone()[0]
+    #Retrieves number of demerit notices obtained within life
+    c.execute("SELECT COUNT(*) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE;", (fname, lname))
+    life_dem = c.fetchone()[0]
 
-    print("\nDriver Abstract:\n")
-    print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , '# of Tickets'.ljust(12, ' ') , ' ' , 'Demerit Count'.ljust(12, ' ') , ' ', 'Dem. Points 2 Years'.ljust(12, ' '), ' ' , 
-                'Dem. Points Lifetime'.ljust(12, ' ') + '\n')
-    print(fname.ljust(12, ' ') , '|' , lname.ljust(12, ' ') , '|' , str(num_tkts).ljust(12, ' ') , '|' , str(num_dem).ljust(13, ' ') , '|', str(pts_2).ljust(19, ' ')
-            , '|' , str(pts_life).ljust(12, ' ') + '\n')
+    #Retrieves sum of demerit points obtained within 2 years
+    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE AND ddate >= DATE('now', '-2 years');", (fname, lname))
+    two_pts = c.fetchone()[0]
+
+    #Retrieves sum of demerit points obtained within life
+    c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE;", (fname, lname))
+    life_pts = c.fetchone()[0]
+
+    print("\nDriver Abstract: 2 YEARS\n")
+    print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , '# of Tickets'.ljust(12, ' ') , ' ' , 'Demerit Count'.ljust(12, ' ') , ' ', 'Dem. Points'.ljust(12, ' ') + '\n')
+    print(fname.ljust(12, ' ') , '|' , lname.ljust(12, ' ') , '|' , str(two_tkts).ljust(12, ' ') , '|' , str(two_dem).ljust(13, ' ') , '|', str(two_pts).ljust(19, ' ') + '\n')
+    
+    
+    print("\nDriver Abstract: LIFETIME\n")
+    print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , '# of Tickets'.ljust(12, ' ') , ' ' , 'Demerit Count'.ljust(12, ' ') , ' ', 'Dem. Points'.ljust(12, ' ') + '\n')
+    print(fname.ljust(12, ' ') , '|' , lname.ljust(12, ' ') , '|' , str(life_tkts).ljust(12, ' ') , '|' , str(life_dem).ljust(13, ' ') , '|', str(life_pts).ljust(12, ' ') + '\n')
 
     #Ordering tickets from latest -> oldest
     option = input("Press 't' if you would like to see your tickets ordered from latest to oldest: ")
@@ -600,7 +611,7 @@ def a6(c, connection):
     if option.lower() == "t":
         c.execute('''SELECT T.tno, T.vdate, T.violation, T.fine, T.regno, V.make, V.model 
                     FROM tickets T, registrations R, vehicles V 
-                    WHERE T.regno = R.regno AND R.vin = V.vin AND R.fname = ? AND R.lname = ? ORDER BY T.vdate DESC;''', (fname, lname))
+                    WHERE T.regno = R.regno AND R.vin = V.vin AND R.fname = ? COLLATE NOCASE AND R.lname = ? COLLATE NOCASE ORDER BY T.vdate DESC;''', (fname, lname))
         all_tkts = c.fetchall()
     
         i = 0
