@@ -426,7 +426,7 @@ def a4(c, connection):
         try:
             vin = input("Enter VIN: ")
             if vin.lower() == "quit":
-                returnpyth
+                return
 
             c.execute("SELECT * FROM registrations WHERE vin = ? COLLATE NOCASE;", (vin,))
             if len(c.fetchall()) == 0:
@@ -515,17 +515,21 @@ def a5(c, connection):
             else:
                 break
 
-    #Retrieve fine amount from ticket issued
-    c.execute("SELECT SUM(amount) FROM payments WHERE tno=?;", (tno,))
-    fine_total = c.fetchall()[0]
-
+    #Select fine amount and display it to user
     c.execute("SELECT fine FROM tickets WHERE tno = ?;",(tno,))
-    fine_remaining = c.fetchone()[0] - fine_total
-
-    if fine_remaining == 0:
-        print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
-        garbage = input('Press Enter to Continue')
-        return
+    fine_amount = c.fetchone()[0]
+    print("Original Fine: ", (fine_amount))
+    
+    #Calculate and display the remaining amount (Payment amount - fine)
+    #c.execute("SELECT amount FROM payments WHERE tno = ?;", (tno,))
+    #remaining = c.fetchone()
+    #if type(remaining) != None:
+    #    remaining = fine_amount - c.fetchone()[0]
+    #    print("Remaining: ", (remaining))
+    #elif remaining == 0:
+    #    print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
+    #    garbage = input('Press Enter to Continue')
+    #    return
 
     while True:
         try:
@@ -536,8 +540,8 @@ def a5(c, connection):
 
             if amount <= 0:
                 raise AssertionError("*** MUST BE GREATER THAN 0 ***")
-            if amount > fine_remaining:
-                raise AssertionError("*** PAYING MORE THAN FINE REMAINING ($%d) ***" % (fine_remaining))
+            if amount > fine_amount:
+                raise AssertionError("*** PAYING MORE THAN FINE REMAINING ($%d) ***" % (fine_amount))
         
         except ValueError:
             print("*** ONLY INTEGERS ALLOWED ***")
