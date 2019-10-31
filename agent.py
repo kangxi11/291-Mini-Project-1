@@ -423,19 +423,20 @@ def a4(c, connection):
         except AssertionError as error:
             print(error)
         else:
+            c.execute("SELECT vin FROM registrations WHERE vin = ? COLLATE NOCASE;", (vin,))
+            vin = c.fetchone()[0]
             break
 
-    sf_name = input("Enter current owner's first name: ")
+    sf_name = getName("Enter current owner's first name: ", 12)
     if sf_name.lower() == "quit":
         return
-
-    sl_name = input("Enter current owner's last name: ")
+    sl_name = getName("Enter current owner's last name: ", 12)
     if sl_name.lower() == "quit":
         return
-    bf_name = input("Enter buyer's first name: ")
+    bf_name = getName("Enter buyer's first name: ", 12)
     if bf_name.lower() == "quit":
         return
-    bl_name = input("Enter buyer's last name: ")
+    bl_name = getName("Enter buyer's last name: ", 12)
     if bl_name.lower() == "quit":
         return
     plate = input("Enter the plate number: ")
@@ -443,8 +444,10 @@ def a4(c, connection):
         return
 
     #Retrieving first name of current owner of car
-    c.execute("SELECT R.regno, R.fname, R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND R.vin=? COLLATE NOCASE ORDER BY regdate DESC LIMIT 1;", (vin,))
+    c.execute("SELECT R.regno, R.fname, R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND R.vin=? COLLATE NOCASE ORDER BY regdate DESC,regno DESC LIMIT 1;", (vin,))
     current_owner = c.fetchone()
+
+    print(sf_name, sl_name, current_owner[1], current_owner[2])
 
     #Check if current owner's name is the same as seller's name
     if current_owner[1] != sf_name or current_owner[2] != sl_name:
