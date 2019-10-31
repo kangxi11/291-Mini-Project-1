@@ -97,7 +97,6 @@ def getPhone(prompt, length, allowNull):
             phone = input(prompt)
             if phone.lower() == "quit":
                 break
-            
             if allowNull and len(phone) == 0:
                 phone = None
             elif len(phone) != 12:
@@ -458,8 +457,6 @@ def a4(c, connection):
     #Retrieving first name of current owner of car
     c.execute("SELECT R.regno, R.fname, R.lname FROM vehicles V, registrations R WHERE V.vin = R.vin AND R.vin=? COLLATE NOCASE ORDER BY regdate DESC,regno DESC LIMIT 1;", (vin,))
     current_owner = c.fetchone()
-
-    print(sf_name, sl_name, current_owner[1], current_owner[2])
 
     #Check if current owner's name is the same as seller's name
     if current_owner[1] != sf_name or current_owner[2] != sl_name:
