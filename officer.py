@@ -157,6 +157,9 @@ def o2 (c, connection):
             if year != '':
                 test = int(year)
 
+                if len(year) != 4:
+                    raise AssertionError('*** YEAR MUST BE 4 DIGITS ***')
+
                 if int(year) <= 0:
                     raise AssertionError('*** YEAR MUST BE GREATER THAN 0 ***')
             
@@ -234,6 +237,8 @@ def o2 (c, connection):
             
             except AssertionError as error:
                 print(error)
+            except ValueError:
+                print("*** MUST BE AN INTEGER ***")
 
             else:
                 cars = ( (cars[int(choice)-1]), )
