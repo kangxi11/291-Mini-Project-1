@@ -505,7 +505,7 @@ def a5(c, connection):
                     return
                 int(tno)
                 c.execute("SELECT * FROM tickets WHERE tno = ?;", (tno,))
-                if len(c.fetchall()) == 0:
+                if len(c.fetchone()) == 0:
                     raise AssertionError("*** TICKET NUMBER DOES NOT EXIST ***")
             except AssertionError as error:
                 print(error)
@@ -518,21 +518,22 @@ def a5(c, connection):
     #Select fine amount and display it to user
     c.execute("SELECT fine FROM tickets WHERE tno = ?;",(tno,))
     fine_amount = c.fetchone()[0]
-    print("Original Fine: ", (fine_amount))
+    #print("Original Fine: ", (fine_amount))
     
     #Calculate and display the remaining amount (Payment amount - fine)
-    #c.execute("SELECT amount FROM payments WHERE tno = ?;", (tno,))
-    #remaining = c.fetchone()
-    #if type(remaining) == None:
-    #    remaining = fine_amount - 0
-    #    print("Remaining: ", (remaining))
-    #elif type(remaining) != None:
-    #    remaining = fine_amount - c.fetchone()[0]
-    #    print("Remaining: ", (remaining))
-    #elif remaining == 0:
-    #    print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
-    #    garbage = input('Press Enter to Continue')
-    #    return
+    c.execute("SELECT SUM(amount) FROM payments WHERE tno = ?;", (tno,))
+    paid = c.fetchone()[0]
+    if paid == None:
+        paid = 0
+    
+    remaining = fine_amount - paid
+
+    if remaining == 0:
+        print("*** THIS TICKET HAS ALREADY BEEN PAID OFF ***")
+        garbage = input('Press Enter to Continue')
+        return
+    
+    print("This ticket has $%d remaining" %(remaining))
 
     while True:
         try:
@@ -543,8 +544,8 @@ def a5(c, connection):
 
             if amount <= 0:
                 raise AssertionError("*** MUST BE GREATER THAN 0 ***")
-            if amount > fine_amount:
-                raise AssertionError("*** PAYING MORE THAN FINE REMAINING ($%d) ***" % (fine_amount))
+            if amount > remaining:
+                raise AssertionError("*** PAYING MORE THAN FINE REMAINING ($%d) ***" % (remaining))
         
         except ValueError:
             print("*** ONLY INTEGERS ALLOWED ***")
@@ -563,6 +564,7 @@ def a5(c, connection):
         print("*** ALREADY PAID TODAY. PAYMENT REJECTED ***")
         garbage = input('Press Enter to Continue')
     else:
+        print("\nPayment Successfull")
         garbage = input('Press Enter to Continue')
 
 def a6(c, connection):
@@ -571,15 +573,30 @@ def a6(c, connection):
 
     clear_screen()
 
-    fname = getName('First name: ', 12)
-    if fname.lower() == "quit":
-        return
-    lname = getName('Last name: ', 12)
-    if lname.lower() == "quit":
-        return
+    while True:
+        try:
+            fname = getName('First name: ', 12)
+            if fname.lower() == "quit":
+                return
+            lname = getName('Last name: ', 12)
+            if lname.lower() == "quit":
+                return
+
+            c.execute('SELECT * FROM persons WHERE fname = ? COLLATE NOCASE and lname = ? COLLATE NOCASE;', (fname, lname))
+            
+            if (len(c.fetchall()) == 0 ):
+                raise AssertionError("*** PERSON NOT FOUND ***")
+        except AssertionError as error:
+            print(error)
+        else:
+            c.execute('SELECT fname, lname FROM persons WHERE fname = ? COLLATE NOCASE and lname = ? COLLATE NOCASE;', (fname, lname))
+            name = c.fetchone()
+            fname = name[0]
+            lname = name[1]
+            break
     
     #Retrieves number of tickets user obtained within 2 years
-    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? COLLATE NOCASE AND R.lname = ? COLLATE NOCASE AND R.regno = T.regno AND regdate >= DATE('now', '-2 years');", (fname, lname))
+    c.execute("SELECT COUNT(*) FROM tickets T, registrations R WHERE R.fname = ? COLLATE NOCASE AND R.lname = ? COLLATE NOCASE AND R.regno = T.regno AND T.vdate >= DATE('now', '-2 years');", (fname, lname))
     two_tkts = c.fetchone()[0]
 
     #Retrieves number of tickets user obtained within life
@@ -625,7 +642,7 @@ def a6(c, connection):
         j = 0
         while (i < len(all_tkts)):
             j = 0
-            print('\n\n\nTicket Num'.ljust(12, ' ') , ' ' , 'Vio. Date'.ljust(12, ' ') , ' ' , 'Vio. Descrip'.ljust(25, ' ') , ' ' , 'Fine'.ljust(12, ' ') , ' ' , 'Reg. Num.'.ljust(12, ' ') , ' ', 'Make'.ljust(12, ' '), ' ' , 
+            print('\n\n\nTicket Num'.ljust(12, ' ') , ' ' , 'Vio. Date'.ljust(12, ' ') , ' ' , 'Violation Description'.ljust(25, ' ') , ' ' , 'Fine'.ljust(12, ' ') , ' ' , 'Reg. Num.'.ljust(12, ' ') , ' ', 'Make'.ljust(12, ' '), ' ' , 
                 'Model'.ljust(12, ' ') + '\n')
             while (j < 5 and i < len(all_tkts)):
                 print(str(all_tkts[i][0]).ljust(12, ' ') , '|' , all_tkts[i][1].ljust(12, ' ') , '|' , '%.25s'%(all_tkts[i][2].ljust(25, ' ')) , '|' , str(all_tkts[i][3]).ljust(12, ' ') , '|', str(all_tkts[i][4]).ljust(12, ' ')
