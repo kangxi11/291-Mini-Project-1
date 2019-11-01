@@ -183,7 +183,8 @@ def o2 (c, connection):
 
             for i in range(len(a)):
                 if a[i] != '':
-                    data_string = data_string + ' AND '
+                    if (data_string != ''):
+                        data_string = data_string + ' AND '
                     data_string = data_string + a[i]   
 
             if data_string == '':
@@ -197,10 +198,22 @@ def o2 (c, connection):
 
         else:
             break
-
+    print(data_string)
     
-    c.execute('SELECT DISTINCT v.make, v.model, v.year, v.color, r.plate FROM vehicles v, registrations r WHERE v.vin = r.vin %s;' %(data_string))
+    # get all vehicles that match make, model, year, and color that have no plate
+    c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r WHERE %s
+                EXCEPT
+                SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r
+                WHERE v.vin = r.vin AND %s;""" %(data_string, data_string))
     cars = c.fetchall()
+
+    # now get all vehicles that match make, model, year, color, and plate
+    c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, r.plate FROM vehicles v, registrations r
+                WHERE v.vin = r.vin AND %s;""" %(data_string))
+    reg_cars = c.fetchall()
+
+    for reg_car in reg_cars:
+        cars.append(reg_car)
 
     if len(cars) >= 4:
         while True:
@@ -210,7 +223,7 @@ def o2 (c, connection):
                 print('     '+'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ' , 'Year'.ljust(12, ' ') , ' ' , 'Color'.ljust(12, ' ') , ' ', 'Plate'.ljust(12, ' ') +'\n')
 
                 for i in range (len(cars)):
-                    print( (str(i+1)+'.').ljust(5, ' ') , cars[i][0].ljust(12, ' ') , '|' , cars[i][1].ljust(12, ' ') , '|' , str(cars[i][2]).ljust(12, ' ') , '|' , cars[i][3].ljust(12, ' ') , '|', cars[i][4].ljust(12, ' '))
+                    print( (str(i+1)+'.').ljust(5, ' ') , cars[i][1].ljust(12, ' ') , '|' , cars[i][2].ljust(12, ' ') , '|' , str(cars[i][3]).ljust(12, ' ') , '|' , cars[i][4].ljust(12, ' ') , '|', cars[i][5].ljust(12, ' '))
 
                 choice = input('Choice: ')
                 if choice.lower() == "quit":
@@ -232,12 +245,20 @@ def o2 (c, connection):
     result = []
 
     for car in cars:
-        c.execute('''SELECT v.make, v.model, v.year, v.color, r.plate, r.regdate, r.expiry, r.fname, r.lname
-                    FROM vehicles v, registrations r
-                    WHERE v.make = ? and v.model = ? and v.year = ? and v.color = ? and r.plate = ? and r.vin = v.vin
-                    ORDER BY r.regdate DESC
-                    limit 1;''', car)
-        result.append(c.fetchone())
+        # first do cars that are registered
+        if car[5] != '*NO PLATE*':
+            c.execute('''SELECT v.make, v.model, v.year, v.color, r.plate, r.regdate, r.expiry, r.fname, r.lname
+                        FROM vehicles v, registrations r
+                        WHERE v.vin = ? and r.vin = v.vin
+                        ORDER BY r.regdate DESC
+                        limit 1;''', (car[0],))
+            result.append(c.fetchone())
+        #now do cars with no registration
+        else:
+            c.execute('''SELECT v.make, v.model, v.year, v.color, '*NO PLATE*', '*NO REG*', '*NO REG*', '*NO OWNER*', '*NO OWNER*'
+                        FROM vehicles v
+                        WHERE v.vin = ?''', (car[0],))
+            result.append(c.fetchone())
 
     clear_screen()
     if (len(result) > 0):

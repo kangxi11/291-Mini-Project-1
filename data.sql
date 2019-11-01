@@ -34,7 +34,7 @@ insert into marriages values (201, '1969-05-03', 'Los Angeles, US', 'Lillian', '
 insert into vehicles values ('U200', 'Chevrolet', 'Camaro', 2012, 'red');
 insert into vehicles values ('U201', 'Toyoto', 'Corolla', 2012, 'red');
 insert into vehicles values ('U202', 'Toyoto', 'RAV4', 2012, 'red');
-insert into vehicles values ('U203', 'Kia', 'Cube', 2012, 'red');
+insert into vehicles values ('U203', 'Kia', 'Cube1', 2012, 'red');
 
 insert into vehicles values ('U300', 'Mercedes', 'SL 230', 2012, 'black');
 insert into vehicles values ('U301', 'Audi', 'A4', 2012, 'black');
@@ -49,6 +49,9 @@ insert into vehicles values ('U505', 'Audi', 'A4', 2013, 'white');
 insert into vehicles values ('U506', 'Audi', 'A4', 2014, 'white');
 insert into vehicles values ('U508', 'Audi', 'A4', 2016, 'white');
 insert into vehicles values ('U509', 'Audi', 'A4', 2000, 'white');
+
+insert into vehicles values ('U600', 'Kia', 'Cube2', 2012, 'red');
+insert into vehicles values ('U601', 'Kia', 'Cube3', 2012, 'red');
 
 
 
