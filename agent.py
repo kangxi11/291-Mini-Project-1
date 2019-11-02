@@ -283,7 +283,7 @@ def a1(c, connection, user):
     connection.commit()
     
     print('Birth successfully registered.')
-    time.sleep(2)
+    garbage = input('Press Enter to Continue')
    
 # contains the functionality for option 2
 def a2(c, connection, user):
@@ -376,7 +376,7 @@ def a2(c, connection, user):
     connection.commit()
 
     print('Marriage successfully registered.')
-    time.sleep(2)
+    garbage = input('Press Enter to Continue')
 
 # contains the functionality for option 3
 def a3(c, connection, user):
@@ -416,7 +416,7 @@ def a3(c, connection, user):
         c.execute('UPDATE registrations SET expiry = ? WHERE regno = ?;', (new_expiry, registration[0]))
         connection.commit()            
     print('Registration successfully renewed. New expiry is', new_expiry)
-    time.sleep(2)
+    garbage = input('Press Enter to Continue')
 
 def a4(c, connection):
     print('Please provide the following information to process a bill of sale: ')
