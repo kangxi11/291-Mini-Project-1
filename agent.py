@@ -614,10 +614,14 @@ def a6(c, connection):
     #Retrieves sum of demerit points obtained within 2 years
     c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE AND ddate >= DATE('now', '-2 years');", (fname, lname))
     two_pts = c.fetchone()[0]
+    if (two_pts == None):
+        two_pts = 0
 
     #Retrieves sum of demerit points obtained within life
     c.execute("SELECT SUM(points) FROM demeritNotices WHERE fname = ? COLLATE NOCASE AND lname = ? COLLATE NOCASE;", (fname, lname))
     life_pts = c.fetchone()[0]
+    if (life_pts == None):
+        life_pts = 0
 
     print("\nDriver Abstract: 2 YEARS\n")
     print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , '# of Tickets'.ljust(12, ' ') , ' ' , 'Demerit Count'.ljust(12, ' ') , ' ', 'Dem. Points'.ljust(12, ' ') + '\n')

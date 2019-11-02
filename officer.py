@@ -59,7 +59,9 @@ def o1(c, connection):
     c.execute("SELECT * FROM vehicles WHERE vin = ? COLLATE NOCASE;", (reg[4], ))
     vehicle = c.fetchone()
 
-    print(reg[5], reg[6], '|', vehicle[1], '|', vehicle[2], '|', vehicle[3], '|', vehicle[4])
+    print("\nVehicle Informatin: ")
+    print('First Name'.ljust(12, ' ') , ' ' , 'Last Name'.ljust(12, ' ') , ' ' , 'Make'.ljust(12, ' ') , ' ' , 'Model'.ljust(12, ' ') , ' ', 'Year'.ljust(12, ' '), ' ', 'Color'.ljust(12, ' ') + '\n')
+    print(reg[5].ljust(12, ' ') , '|' , reg[6].ljust(12, ' ') , '|' , vehicle[1].ljust(12, ' ') , '|' , vehicle[2].ljust(12, ' ') , '|', str(vehicle[3]).ljust(12, ' '), '|', vehicle[4].ljust(12, ' ') + '\n')
 
     # find a unique ticket number
     c.execute("SELECT tno FROM tickets;")
@@ -76,6 +78,8 @@ def o1(c, connection):
             break
 
     regno = reg[0] # registration number of car we're ticketing
+
+    print("Enter the following information for the ticket:")
 
     # get a violation date, if None put todays date
 
