@@ -20,6 +20,15 @@ def assertLength(value, length):
     if len(value) > length or len(value) <= 0:
         raise AssertionError('*** MUST BE BETWEEN 1 AND %d CHARACTERS ***' % (length))
 
+# raises an assertion if the name has any characters
+# other than letters, hyphen and numbers
+def assertValidName(name):
+    for char in name:
+        if char.isalpha() or char == '-' or char.isnumeric():
+            continue
+        else:
+            raise AssertionError('*** CAN ONLY CONTAIN ALPHABETICAL, NUMERICAL, OR THE HYPHEN CHARACTERS ***')
+
 # prompts for a name and returns it
 def getName(prompt, length):
     while True:
@@ -27,7 +36,7 @@ def getName(prompt, length):
             name = input(prompt)
             if name.lower() == "quit":
                 break
-            assertAlpha(name)
+            assertValidName(name)
             assertLength(name, length)
         except AssertionError as error:
             print(error)
@@ -166,12 +175,21 @@ def a1(c, connection, user):
     # get all user input
     print('Please provide the following information for the birth: ')
     print('If you want to quit the operation, enter \"quit\" at any time')
-    fname = getName('First name: ', 12)
-    if fname.lower() == "quit":
-        return
-    lname = getName('Last name: ', 12)
-    if lname.lower() == "quit":
-        return
+
+    while True:
+        fname = getName('First name: ', 12)
+        if fname.lower() == "quit":
+            return
+        lname = getName('Last name: ', 12)
+        if lname.lower() == "quit":
+            return
+        c.execute('SELECT * FROM persons WHERE fname = :fname COLLATE NOCASE and lname = :lname COLLATE NOCASE;', {'fname':fname, 'lname':lname})
+        baby = c.fetchone()
+        if baby == None:
+            break
+        else:
+            print('Cannot register a birth for somebody who is already in the system')
+            print('Please try again with a valid entry')
 
     while True:
         try:
