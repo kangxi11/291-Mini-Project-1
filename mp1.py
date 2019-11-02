@@ -81,9 +81,9 @@ def homescreen():
 def main():
     global connection, c
 
-    #database_name = input('Database name: ')
+    database_name = input('Database name: ')
 
-    connect("mp1.db") # connect the database
+    connect(database_name) # connect the database
     
     leave = False
     
