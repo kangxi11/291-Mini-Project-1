@@ -205,7 +205,6 @@ def o2 (c, connection):
 
         else:
             break
-    print(data_string)
     
     # get all vehicles that match make, model, year, and color that have no plate
     c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r WHERE %s
@@ -256,15 +255,17 @@ def o2 (c, connection):
     for car in cars:
         # first do cars that are registered
         if car[5] != '*NO PLATE*':
-            c.execute('''SELECT v.make, v.model, v.year, v.color, r.plate, r.regdate, r.expiry, r.fname, r.lname
+            c.execute('''SELECT DISTINCT v.make, v.model, v.year, v.color, r.plate, r.regdate, r.expiry, r.fname, r.lname
                         FROM vehicles v, registrations r
                         WHERE v.vin = ? and r.vin = v.vin
                         ORDER BY r.regdate DESC
                         limit 1;''', (car[0],))
-            result.append(c.fetchone())
+            temp = c.fetchone()
+            if temp not in result:
+                result.append(temp)
         #now do cars with no registration
         else:
-            c.execute('''SELECT v.make, v.model, v.year, v.color, '*NO PLATE*', '*NO REG*', '*NO REG*', '*NO OWNER*', '*NO OWNER*'
+            c.execute('''SELECT DISTINCT v.make, v.model, v.year, v.color, '*NO PLATE*', '*NO REG*', '*NO REG*', '*NO OWNER*', '*NO OWNER*'
                         FROM vehicles v
                         WHERE v.vin = ?''', (car[0],))
             result.append(c.fetchone())
