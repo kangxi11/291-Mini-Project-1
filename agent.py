@@ -523,7 +523,7 @@ def a5(c, connection):
                     return
                 int(tno)
                 c.execute("SELECT * FROM tickets WHERE tno = ?;", (tno,))
-                if len(c.fetchone()) == 0:
+                if len(c.fetchall()) == 0:
                     raise AssertionError("*** TICKET NUMBER DOES NOT EXIST ***")
             except AssertionError as error:
                 print(error)
