@@ -205,13 +205,14 @@ def o2 (c, connection):
 
         else:
             break
-    
+    cars = []
     # get all vehicles that match make, model, year, and color that have no plate
-    c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r WHERE %s
-                EXCEPT
-                SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r
-                WHERE v.vin = r.vin AND %s;""" %(data_string, data_string))
-    cars = c.fetchall()
+    if plate == '':
+        c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r WHERE %s
+                    EXCEPT
+                    SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, '*NO PLATE*' FROM vehicles v, registrations r
+                    WHERE v.vin = r.vin AND %s;""" %(data_string, data_string))
+        cars = c.fetchall()
 
     # now get all vehicles that match make, model, year, color, and plate
     c.execute("""SELECT DISTINCT v.vin, v.make, v.model, v.year, v.color, r.plate FROM vehicles v, registrations r
@@ -220,6 +221,8 @@ def o2 (c, connection):
 
     for reg_car in reg_cars:
         cars.append(reg_car)
+    
+    print(cars)
 
     if len(cars) >= 4:
         while True:
