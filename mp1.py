@@ -71,9 +71,9 @@ def homescreen():
     print('2 - Exit')
     user_choice = input('Choice: ')
 
-    if user_choice == '1':
+    if user_choice == '1' or user_choice == 1:
         login()
-    if user_choice == '2':
+    if user_choice == '2' or user_choice == 2:
         clear_screen()
         print('Service Alberta is now exiting')
         sys.exit()

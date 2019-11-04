@@ -28,9 +28,9 @@ def officer_menu(user, c, connection):
             sys.exit()
         if choice == 'logout':
             return
-        if choice == '1':
+        if choice == '1' or choice == 1:
             o1(c, connection)
-        if choice == '2':
+        if choice == '2' or choice == 2:
             o2(c, connection)
 
 def o1(c, connection):
@@ -222,8 +222,6 @@ def o2 (c, connection):
     for reg_car in reg_cars:
         cars.append(reg_car)
     
-    print(cars)
-
     if len(cars) >= 4:
         while True:
             try:

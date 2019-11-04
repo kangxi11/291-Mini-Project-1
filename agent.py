@@ -152,17 +152,17 @@ def agent_menu(user, c, connection):
             sys.exit()
         elif choice == 'logout':
             return
-        elif choice == '1':
+        elif choice == '1' or choice == 1:
             a1(c, connection, user)
-        elif choice == '2':
+        elif choice == '2' or choice == 2:
             a2(c, connection, user)
-        elif choice == '3':
+        elif choice == '3' or choice == 3:
             a3(c, connection, user)
-        elif choice == '4':
+        elif choice == '4' or choice == 4:
             a4(c, connection)
-        elif choice == '5':
+        elif choice == '5' or choice == 5:
             a5(c, connection)
-        elif choice == '6':
+        elif choice == '6' or choice == 6:
             a6(c, connection)
         else:
             print('You must enter either a number from the list of choices, \"exit\", or \"logout\"')
