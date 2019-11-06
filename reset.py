@@ -16,6 +16,7 @@ def main():
                     drop table if exists payments;
                     drop table if exists users;""")
   #random things
+  #more things
     conn.commit()
 
     c.execute("PRAGMA foreign_keys = ON;")
